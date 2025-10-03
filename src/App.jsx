@@ -14,17 +14,17 @@ import {
     plan: '10 cts./l'
   });
 
-  // Datos simulados del pack familiar contratado
+  // Datos simulados del pack eco contratado
   const contractedPack = {
-    name: 'Pack Familia',
-    monthlyPrice: 89,
-    renewalDate: '15 Oct 2025',
+    name: 'Pack Eco',
+    monthlyPrice: 249,
+    renewalDate: '15 Nov 2025',
     consumption: {
-      electricity: { used: 245, total: 400, unit: 'kWh' },
-      fuel: { used: 320, total: 500, unit: 'L' },
-      evCharging: { used: 12, total: 30, unit: 'sesiones' },
-      wayletCards: { used: 2, total: 2, unit: 'tarjetas activas' },
-      storeDiscounts: { used: 8, total: 'ilimitado', unit: 'descuentos usados' }
+      electricity: { used: 245, total: 300, unit: 'kWh' },
+      gas: { used: 180, total: 500, unit: 'kWh' },
+      fuel: { used: 32, total: 85, unit: 'L' },
+      evCharging: { used: 15, total: 20, unit: '% descuento activo' },
+      wayletCards: { used: 2, total: 2, unit: 'tarjetas activas' }
     }
   };
 
@@ -32,58 +32,57 @@ import {
   const availablePacks = [
     {
       id: 1,
-      name: 'Pack Familia',
-      subtitle: 'Perfecto para hogares con 2+ vehículos',
-      monthlyPrice: 89,
-      originalPrice: 120,
+      name: 'Pack Eco',
+      subtitle: 'Perfecto para familias con vehículos electricos',
+      monthlyPrice: 249,
+      originalPrice: 350,
       savings: 31,
       icon: Users,
-      color: 'from-purple-500 to-pink-500',
+      color: 'from-green-800 to-green-500',
       features: [
-        'Tarifa hogar inteligente con solar',
-        'Carga EV ilimitada en casa',
-        '500L combustible/mes con 5% extra cashback',
-        '2 tarjetas Waylet familiares',
-        'Descuentos en Tienda Repsol'
+        '300 kWh de electricidad para el hogar',
+        '500 kWh de gas para el hogar',
+        '85L combustible/mes',
+        '20% de descuento en cargadores electricos Repsol',
       ],
-      bestFor: 'Familias con casa propia y 2+ vehículos'
+      bestFor: 'Unico precio para todos los siguientes servicios'
     },
-    {
-      id: 2,
-      name: 'Pack Empresa',
-      subtitle: 'Gestión de flota simplificada',
-      monthlyPrice: 199,
-      originalPrice: 280,
-      savings: 81,
-      icon: Briefcase,
-      color: 'from-blue-600 to-indigo-600',
-      features: [
-        'Hasta 10 vehículos incluidos',
-        'Dashboard de gestión de flota',
-        'Facturación unificada',
-        'Carga rápida prioritaria',
-        'Soporte 24/7 para empresas'
-      ],
-      bestFor: 'PYMEs con flota de 5-10 vehículos'
-    },
-    {
-      id: 3,
-      name: 'Pack Drive',
-      subtitle: 'Para el conductor urbano',
-      monthlyPrice: 39,
-      originalPrice: 55,
-      savings: 16,
-      icon: Car,
-      color: 'from-green-500 to-teal-500',
-      features: [
-        '300L combustible/mes con 3% cashback',
-        'Carga EV en estaciones Repsol',
-        'Parking gratuito en centros comerciales',
-        'Lavado de coche 2x/mes',
-        'Asistencia en carretera'
-      ],
-      bestFor: 'Conductores que hacen 15,000+ km/año'
-    }
+    // {
+    //   id: 2,
+    //   name: 'Pack Empresa',
+    //   subtitle: 'Gestión de flota simplificada',
+    //   monthlyPrice: 199,
+    //   originalPrice: 280,
+    //   savings: 81,
+    //   icon: Briefcase,
+    //   color: 'from-blue-600 to-indigo-600',
+    //   features: [
+    //     'Hasta 10 vehículos incluidos',
+    //     'Dashboard de gestión de flota',
+    //     'Facturación unificada',
+    //     'Carga rápida prioritaria',
+    //     'Soporte 24/7 para empresas'
+    //   ],
+    //   bestFor: 'PYMEs con flota de 5-10 vehículos'
+    // },
+    // {
+    //   id: 3,
+    //   name: 'Pack Drive',
+    //   subtitle: 'Para el conductor urbano',
+    //   monthlyPrice: 39,
+    //   originalPrice: 55,
+    //   savings: 16,
+    //   icon: Car,
+    //   color: 'from-green-500 to-teal-500',
+    //   features: [
+    //     '300L combustible/mes con 3% cashback',
+    //     'Carga EV en estaciones Repsol',
+    //     'Parking gratuito en centros comerciales',
+    //     'Lavado de coche 2x/mes',
+    //     'Asistencia en carretera'
+    //   ],
+    //   bestFor: 'Conductores que hacen 15,000+ km/año'
+    // }
   ];
 
   const HomeScreen = () => (
@@ -152,11 +151,11 @@ import {
                   Controla tus consumos
                 </h3>
                 <p className="text-gray-600 text-sm">
-                  Pack Familia activo • Vence 15 Oct 2025
+                  Pack Eco activo • Vence 15 Nov 2025
                 </p>
               </div>
               <div className="text-right">
-                <div className="text-green-600 font-bold text-lg">€89/mes</div>
+                <div className="text-green-600 font-bold text-lg">€249/mes</div>
                 <div className="text-gray-500 text-xs">Renovación automática</div>
               </div>
             </div>
@@ -416,7 +415,7 @@ import {
               </div>
               <div className="flex-1">
                 <h4 className="font-semibold text-gray-800">Electricidad del hogar</h4>
-                <p className="text-gray-600 text-sm">Tarifa inteligente con solar</p>
+                <p className="text-gray-600 text-sm">300 kWh incluidos</p>
               </div>
               <button 
                 className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors group relative"
@@ -444,15 +443,51 @@ import {
             </div>
           </div>
 
-          {/* Fuel */}
+          {/* Gas */}
           <div className="bg-white rounded-2xl p-4 shadow-sm">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                 <Fuel className="w-6 h-6 text-blue-600" />
               </div>
               <div className="flex-1">
+                <h4 className="font-semibold text-gray-800">Gas del hogar</h4>
+                <p className="text-gray-600 text-sm">500 kWh incluidos</p>
+              </div>
+              <button 
+                className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors group relative"
+                title="Ampliar"
+              >
+                <Plus className="w-4 h-4 text-gray-600" />
+                <div className="absolute -top-8 right-0 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  Ampliar
+                </div>
+              </button>
+            </div>
+            <div className="flex justify-between items-end mb-2">
+              <span className="text-2xl font-bold text-gray-800">
+                {contractedPack.consumption.gas.used}
+              </span>
+              <span className="text-gray-500">
+                de {contractedPack.consumption.gas.total} {contractedPack.consumption.gas.unit}
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-blue-500 h-2 rounded-full" 
+                style={{ width: `${(contractedPack.consumption.gas.used / contractedPack.consumption.gas.total) * 100}%` }}
+              ></div>
+            </div>
+          </div>
+
+          {/* Fuel */}
+          <div className="bg-white rounded-2xl p-4 shadow-sm">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                <Car className="w-6 h-6 text-orange-600" />
+              </div>
+              <div className="flex-1">
                 <h4 className="font-semibold text-gray-800">Combustible</h4>
-                <p className="text-gray-600 text-sm">5% cashback extra incluido</p>
+                <p className="text-gray-600 text-sm">85L incluidos por mes</p>
               </div>
               <button 
                 className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors group relative"
@@ -474,21 +509,21 @@ import {
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div 
-                className="bg-blue-500 h-2 rounded-full" 
+                className="bg-orange-500 h-2 rounded-full" 
                 style={{ width: `${(contractedPack.consumption.fuel.used / contractedPack.consumption.fuel.total) * 100}%` }}
               ></div>
             </div>
           </div>
 
-          {/* EV Charging */}
+          {/* EV Charging Discount */}
           <div className="bg-white rounded-2xl p-4 shadow-sm">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <Car className="w-6 h-6 text-green-600" />
+                <Zap className="w-6 h-6 text-green-600" />
               </div>
               <div className="flex-1">
-                <h4 className="font-semibold text-gray-800">Carga EV en casa</h4>
-                <p className="text-gray-600 text-sm">Carga ilimitada incluida</p>
+                <h4 className="font-semibold text-gray-800">Descuento Cargadores EV</h4>
+                <p className="text-gray-600 text-sm">20% descuento en cargadores Repsol</p>
               </div>
               <button 
                 className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors group relative"
@@ -500,24 +535,18 @@ import {
                 </div>
               </button>
             </div>
-            <div className="flex justify-between items-end mb-2">
-              <span className="text-2xl font-bold text-gray-800">
-                {contractedPack.consumption.evCharging.used}
+            <div className="flex justify-between items-center">
+              <span className="text-2xl font-bold text-green-600">
+                {contractedPack.consumption.evCharging.used}%
               </span>
               <span className="text-gray-500">
-                de {contractedPack.consumption.evCharging.total} {contractedPack.consumption.evCharging.unit}
+                {contractedPack.consumption.evCharging.unit}
               </span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-green-500 h-2 rounded-full" 
-                style={{ width: `${(contractedPack.consumption.evCharging.used / contractedPack.consumption.evCharging.total) * 100}%` }}
-              ></div>
             </div>
           </div>
 
           {/* Waylet Cards */}
-          <div className="bg-white rounded-2xl p-4 shadow-sm">
+          {/* <div className="bg-white rounded-2xl p-4 shadow-sm">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
                 <CreditCard className="w-6 h-6 text-purple-600" />
@@ -544,37 +573,7 @@ import {
                 de {contractedPack.consumption.wayletCards.total} {contractedPack.consumption.wayletCards.unit}
               </span>
             </div>
-          </div>
-
-          {/* Store Discounts */}
-          <div className="bg-white rounded-2xl p-4 shadow-sm">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                <Store className="w-6 h-6 text-orange-600" />
-              </div>
-              <div className="flex-1">
-                <h4 className="font-semibold text-gray-800">Descuentos Tienda</h4>
-                <p className="text-gray-600 text-sm">Este mes</p>
-              </div>
-              <button 
-                className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors group relative"
-                title="Ampliar"
-              >
-                <Plus className="w-4 h-4 text-gray-600" />
-                <div className="absolute -top-8 right-0 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                  Ampliar
-                </div>
-              </button>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-2xl font-bold text-gray-800">
-                {contractedPack.consumption.storeDiscounts.used}
-              </span>
-              <span className="text-gray-500">
-                {contractedPack.consumption.storeDiscounts.unit}
-              </span>
-            </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Actions */}
