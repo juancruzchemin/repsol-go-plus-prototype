@@ -36,7 +36,7 @@ import {
       subtitle: 'Perfecto para familias con vehículos electricos',
       monthlyPrice: 249,
       originalPrice: 350,
-      savings: 31,
+      savings: 50,
       icon: Users,
       color: 'from-green-800 to-green-500',
       features: [
@@ -330,7 +330,7 @@ import {
                   </div>
                 </div>
                 <div className="bg-white bg-opacity-20 rounded px-2 py-1 inline-block">
-                  <span className="text-xs font-semibold">Ahorras €{pack.savings}/mes</span>
+                  <span className="text-xs font-semibold">Ahorras {pack.savings}% al mes</span>
                 </div>
               </div>
 
