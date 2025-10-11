@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { 
+import {
   Bell, User, Lightbulb, ShoppingCart, Truck, ParkingCircle,
   Fuel, Zap, Car, Store, Home, CreditCard, Gift, Users, Briefcase, CheckCircle, Package, Plus
-} from 'lucide-react';const WayletApp = () => {
+} from 'lucide-react';
+import HomeBar from './components/HomeBar';
+import logoBackground from './assets/logo-removebg-preview.png'; const WayletApp = () => {
   const [currentView, setCurrentView] = useState('home');
   const [selectedPack, setSelectedPack] = useState(null);
   const [hasContractedPack, setHasContractedPack] = useState(false); // Empieza sin pack para demostrar flujo
@@ -33,91 +35,58 @@ import {
     {
       id: 1,
       name: 'Pack Eco',
-      subtitle: 'Perfecto para familias con vehículos electricos',
+      subtitle: 'Familias?',
       monthlyPrice: 249,
       originalPrice: 350,
       savings: 50,
       icon: Users,
       color: 'from-green-800 to-green-500',
       features: [
-        '300 kWh de electricidad para el hogar',
-        '500 kWh de gas para el hogar',
-        '85L combustible/mes',
-        '20% de descuento en cargadores electricos Repsol',
+        'Domotica en casa',
+        'Temperatura como servicio',
       ],
       bestFor: 'Unico precio para todos los siguientes servicios'
     },
-    // {
-    //   id: 2,
-    //   name: 'Pack Empresa',
-    //   subtitle: 'Gestión de flota simplificada',
-    //   monthlyPrice: 199,
-    //   originalPrice: 280,
-    //   savings: 81,
-    //   icon: Briefcase,
-    //   color: 'from-blue-600 to-indigo-600',
-    //   features: [
-    //     'Hasta 10 vehículos incluidos',
-    //     'Dashboard de gestión de flota',
-    //     'Facturación unificada',
-    //     'Carga rápida prioritaria',
-    //     'Soporte 24/7 para empresas'
-    //   ],
-    //   bestFor: 'PYMEs con flota de 5-10 vehículos'
-    // },
-    // {
-    //   id: 3,
-    //   name: 'Pack Drive',
-    //   subtitle: 'Para el conductor urbano',
-    //   monthlyPrice: 39,
-    //   originalPrice: 55,
-    //   savings: 16,
-    //   icon: Car,
-    //   color: 'from-green-500 to-teal-500',
-    //   features: [
-    //     '300L combustible/mes con 3% cashback',
-    //     'Carga EV en estaciones Repsol',
-    //     'Parking gratuito en centros comerciales',
-    //     'Lavado de coche 2x/mes',
-    //     'Asistencia en carretera'
-    //   ],
-    //   bestFor: 'Conductores que hacen 15,000+ km/año'
-    // }
   ];
 
   const HomeScreen = () => (
     <div className="min-h-screen bg-gray-50">
       {/* Header with gradient and cards */}
-      <div className="relative bg-gradient-to-b from-red-500 via-orange-400 via-75% via-yellow-400 to-white px-4 pt-4 pb-8 overflow-hidden">
-        {/* Background decorative circles */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-orange-300 to-yellow-200 rounded-full opacity-30 transform translate-x-32 -translate-y-32"></div>
-        <div className="absolute top-20 left-0 w-64 h-64 bg-gradient-to-br from-red-400 to-orange-300 rounded-full opacity-20 transform -translate-x-20"></div>
-        <div className="absolute bottom-0 right-10 w-48 h-48 bg-gradient-to-br from-yellow-200 to-orange-200 rounded-full opacity-25"></div>
-        
+      <div>
         {/* Content with relative positioning */}
-        <div className="relative z-10">
+        <div className="relative z-10" style={{ height: '200px' }}>
+          {/* Imagen de fondo única y centrada */}
+          <div
+            className="absolute inset-0 bg-contain bg-center bg-no-repeat"
+            style={{
+              backgroundImage: `url(${logoBackground})`,
+              backgroundSize: '100%',
+              marginTop: "-150px"
+            }}
+          ></div>
+
           {/* Top icons */}
           <div className="flex justify-between items-center gap-3 mb-6">
             {/* Demo button - temporal para testing */}
-            <button 
+            <button
               onClick={() => setHasContractedPack(!hasContractedPack)}
-              className="text-xs bg-white bg-opacity-20 px-2 py-1 rounded text-white backdrop-blur-sm"
+              className="text-xs bg-white bg-opacity-20 px-2 py-1 rounded text-white backdrop-blur-sm mg-2 px-5"
             >
               {hasContractedPack ? 'Consumo' : 'PackGo+'}
             </button>
-            
+
             <div className="flex gap-3">
               <div className="w-10 h-10 bg-white bg-opacity-30 rounded-full flex items-center justify-center backdrop-blur-sm">
-                <Bell className="w-5 h-5 text-white" />
+                <Bell className="w-5 h-5 text-black" />
               </div>
               <div className="w-10 h-10 bg-white bg-opacity-30 rounded-full flex items-center justify-center backdrop-blur-sm">
-                <User className="w-5 h-5 text-white" />
+                <User className="w-5 h-5 text-black" />
               </div>
             </div>
           </div>
 
           {/* Balance Cards */}
-          <div className="flex gap-3 mb-4">
+          <div className="flex gap-3 mb-4 mg-2 px-2">
             <div className="flex-1 bg-white bg-opacity-90 rounded-2xl p-4 backdrop-blur-sm">
               <div className="text-gray-600 text-sm mb-1">Saldo</div>
               <div className="text-2xl font-bold text-gray-800">{userBalance.saldo} €</div>
@@ -137,68 +106,72 @@ import {
       {/* Conditional Section: Packs GO+ or Controla Consumos */}
       {hasContractedPack ? (
         /* Controla mis consumos Section - Solo si SÍ tiene pack contratado */
-        <div className="mx-4 mt-1 mb-6">
-          <button 
-            onClick={() => setCurrentView('consumption')}
-            className="w-full bg-white rounded-2xl p-4 shadow-lg border border-gray-200 hover:shadow-xl transition-shadow"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center flex-shrink-0">
-                <Zap className="w-6 h-6 text-white" />
+        <div style={{ backgroundColor: '#bd1c0dff' }}>
+          <div className="mx-4 mt-1 mb-6">
+            <button
+              onClick={() => setCurrentView('consumption')}
+              className="w-full bg-white rounded-2xl p-4 shadow-lg border border-gray-200 hover:shadow-xl transition-shadow"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Zap className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1 text-left">
+                  <h3 className="text-gray-800 font-bold text-lg">
+                    Controla tus consumos
+                  </h3>
+                  <p className="text-gray-600 text-sm">
+                    Pack Eco activo • Vence 15 Nov 2025
+                  </p>
+                </div>
+                <div className="text-right">
+                  <div className="text-green-600 font-bold text-lg">€249/mes</div>
+                  <div className="text-gray-500 text-xs">Renovación automática</div>
+                </div>
               </div>
-              <div className="flex-1 text-left">
-                <h3 className="text-gray-800 font-bold text-lg">
-                  Controla tus consumos
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  Pack Eco activo • Vence 15 Nov 2025
-                </p>
-              </div>
-              <div className="text-right">
-                <div className="text-green-600 font-bold text-lg">€249/mes</div>
-                <div className="text-gray-500 text-xs">Renovación automática</div>
-              </div>
-            </div>
-          </button>
+            </button>
+          </div>
         </div>
       ) : (
         /* Packs GO+ Section - Solo si NO tiene pack contratado */
-        <div className="mx-4 mt-1 mb-6">
-          <div className="bg-gradient-to-br from-red-600 via-orange-500 to-yellow-400 rounded-2xl p-4 shadow-lg">
-            <div className="flex items-center gap-4 mb-3">
-              <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center flex-shrink-0">
-                <Package className="w-6 h-6 text-white" />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-white font-bold text-lg">
-                    Packs GO+
-                  </h2>
-                  <div className="bg-white bg-opacity-20 rounded-full px-3 py-1 -mt-2">
-                    <span className="text-white text-xs font-semibold">
-                      Ahorra hasta 40%
-                    </span>
-                  </div>
+        <div className="packs-animate-gradient" style={{  borderRadius: '16px', justifyContent: 'center', margin:"10px" }}>
+          <div className="mx-4 mt-1 mb-6 relative z-50">
+            <div className="bg-white bg-opacity-20 backdrop-blur-lg rounded-2xl p-3 shadow-xl border border-white border-opacity-40 relative z-50" style={{ background: '#eb5b1d', marginTop: "17px"}}>
+              <div className="flex items-center gap-4 mb-3 relative z-50">
+                <div className="w-12 h-12 bg-white bg-opacity-40 rounded-full flex items-center justify-center flex-shrink-0 shadow-xl border border-white border-opacity-50">
+                  <Package className="w-6 h-6 text-white drop-shadow-lg" />
                 </div>
-                <p className="text-white text-sm font-semibold">
-                  Todos los servicios por mes a un único precio
-                </p>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-white font-bold text-lg drop-shadow-lg" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>
+                      Packs GO+
+                    </h2>
+                    <div className="bg-white bg-opacity-35 rounded-full px-3 py-1 -mt-2 shadow-xl border border-white border-opacity-30">
+                      <span className="text-white text-xs font-bold drop-shadow-lg" style={{textShadow: '1px 1px 2px rgba(0,0,0,0.5)'}}>
+                        Ahorra hasta 40%
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-white text-sm font-semibold drop-shadow-lg" style={{textShadow: '1px 1px 3px rgba(0,0,0,0.4)'}}>
+                    Todos los servicios por mes a un único precio
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <button 
-              onClick={() => setCurrentView('packs')}
-              className="w-full bg-white text-red-600 py-3 rounded-xl font-bold text-base hover:bg-gray-50 transition-colors shadow-sm"
-            >
-              Explorar Packs GO+
-            </button>
+              <button
+                onClick={() => setCurrentView('packs')}
+                className="w-full bg-white text-orange-600 py-3 rounded-xl font-bold text-base"
+              >
+                🚀 Explorar Packs GO+
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {/* Services Section */}
       <div className="px-4 mb-6 pb-20">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Paga y genera saldo</h2>
+        <h2 className="text-xl font-bold text-gray-800 mb-4" style={{marginTop: "30px"}}>Paga y genera saldo</h2>
 
         <div className="grid grid-cols-2 gap-4">
           {/* Repostar */}
@@ -268,38 +241,14 @@ import {
           </div>
         </div>
       </div>
-
-      {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white">
-        <div className="relative flex items-end justify-between max-w-md mx-auto px-4 pb-4">
-          {/* Left Button - Inicio */}
-          <button className="flex flex-col items-center py-2 text-orange-500 flex-1">
-            <Home className="w-6 h-6 mb-1" />
-            <span className="text-xs font-medium">Inicio</span>
-          </button>
-
-          {/* Center Button - Pagar (Elevated) */}
-          <button className="flex flex-col items-center relative -top-3 flex-1">
-            <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-orange-500 rounded-full flex items-center justify-center shadow-xl">
-              <CreditCard className="w-7 h-7 text-white" />
-            </div>
-            <span className="text-xs text-gray-600 mt-2 font-medium">Pagar</span>
-          </button>
-
-          {/* Right Button - Beneficios */}
-          <button className="flex flex-col items-center py-2 text-gray-400 flex-1">
-            <Gift className="w-6 h-6 mb-1" />
-            <span className="text-xs font-medium">Beneficios</span>
-          </button>
-        </div>
-      </div>
+      <HomeBar />
     </div>
   );
 
   const PacksView = () => (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-red-600 text-white p-4">
+      <div className="text-white p-4" style={{ background: 'linear-gradient(135deg, #f6aa00 0%, #ff4e00 100%)' }}>
         <div className="flex items-center gap-3">
           <button onClick={() => setCurrentView('home')} className="text-white">
             ←
@@ -337,7 +286,7 @@ import {
               {/* Pack Content */}
               <div className="p-4">
                 <p className="text-sm text-gray-600 mb-3 font-medium">{pack.bestFor}</p>
-                
+
                 <div className="space-y-2 mb-4">
                   {pack.features.map((feature, index) => (
                     <div key={index} className="flex items-center gap-2">
@@ -347,7 +296,7 @@ import {
                   ))}
                 </div>
 
-                <button 
+                <button
                   onClick={() => {
                     setSelectedPack(pack);
                     setCurrentView('pack-detail');
@@ -378,7 +327,6 @@ import {
           </div>
         </div>
       </div>
-
       <div className="p-4">
         {/* Pack Status Card */}
         <div className="bg-white rounded-2xl p-4 shadow-sm mb-6">
@@ -417,7 +365,7 @@ import {
                 <h4 className="font-semibold text-gray-800">Electricidad del hogar</h4>
                 <p className="text-gray-600 text-sm">300 kWh incluidos</p>
               </div>
-              <button 
+              <button
                 className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors group relative"
                 title="Ampliar"
               >
@@ -436,8 +384,8 @@ import {
               </span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-yellow-500 h-2 rounded-full" 
+              <div
+                className="bg-yellow-500 h-2 rounded-full"
                 style={{ width: `${(contractedPack.consumption.electricity.used / contractedPack.consumption.electricity.total) * 100}%` }}
               ></div>
             </div>
@@ -453,7 +401,7 @@ import {
                 <h4 className="font-semibold text-gray-800">Gas del hogar</h4>
                 <p className="text-gray-600 text-sm">500 kWh incluidos</p>
               </div>
-              <button 
+              <button
                 className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors group relative"
                 title="Ampliar"
               >
@@ -472,8 +420,8 @@ import {
               </span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-blue-500 h-2 rounded-full" 
+              <div
+                className="bg-blue-500 h-2 rounded-full"
                 style={{ width: `${(contractedPack.consumption.gas.used / contractedPack.consumption.gas.total) * 100}%` }}
               ></div>
             </div>
@@ -489,7 +437,7 @@ import {
                 <h4 className="font-semibold text-gray-800">Combustible</h4>
                 <p className="text-gray-600 text-sm">85L incluidos por mes</p>
               </div>
-              <button 
+              <button
                 className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors group relative"
                 title="Ampliar"
               >
@@ -508,8 +456,8 @@ import {
               </span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-orange-500 h-2 rounded-full" 
+              <div
+                className="bg-orange-500 h-2 rounded-full"
                 style={{ width: `${(contractedPack.consumption.fuel.used / contractedPack.consumption.fuel.total) * 100}%` }}
               ></div>
             </div>
@@ -525,7 +473,7 @@ import {
                 <h4 className="font-semibold text-gray-800">Descuento Cargadores EV</h4>
                 <p className="text-gray-600 text-sm">20% descuento en cargadores Repsol</p>
               </div>
-              <button 
+              <button
                 className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors group relative"
                 title="Ampliar"
               >
@@ -591,7 +539,7 @@ import {
 
   const PackDetailView = () => {
     if (!selectedPack) return null;
-    
+
     const IconComponent = selectedPack.icon;
 
     return (
@@ -614,7 +562,7 @@ import {
           {/* Contract Summary */}
           <div className="bg-white rounded-lg p-4 mb-4">
             <h3 className="font-semibold mb-3">Resumen de Contratación</h3>
-            
+
             <div className="space-y-3">
               <div className="flex justify-between py-2 border-b">
                 <span>{selectedPack.name}</span>
@@ -644,13 +592,13 @@ import {
             </div>
           </div>
 
-          <button 
+          <button
             onClick={() => setShowConfirmationModal(true)}
             className={`w-full bg-gradient-to-r ${selectedPack.color} text-white py-3 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity`}
           >
             Contratar Ahora - €{selectedPack.monthlyPrice}/mes
           </button>
-          
+
           <p className="text-center text-xs text-gray-500 mt-3">
             Al contratar aceptas los términos y condiciones de Repsol GO+
           </p>
@@ -665,7 +613,7 @@ import {
       {currentView === 'packs' && <PacksView />}
       {currentView === 'consumption' && <ConsumptionView />}
       {currentView === 'pack-detail' && <PackDetailView />}
-      
+
       {/* Modal de Confirmación */}
       {showConfirmationModal && selectedPack && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -698,21 +646,21 @@ import {
             {/* Información adicional */}
             <div className="text-center mb-6">
               <p className="text-xs text-gray-500">
-                • Activación gratuita este mes<br/>
-                • Renovación automática<br/>
+                • Activación gratuita este mes<br />
+                • Renovación automática<br />
                 • Puedes cancelar cuando quieras
               </p>
             </div>
 
             {/* Botones de acción */}
             <div className="flex gap-3">
-              <button 
+              <button
                 onClick={() => setShowConfirmationModal(false)}
                 className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-300 transition-colors"
               >
                 Cancelar
               </button>
-              <button 
+              <button
                 onClick={() => {
                   setShowConfirmationModal(false);
                   setShowSuccessAnimation(true);
@@ -743,7 +691,7 @@ import {
               </div>
               {/* Círculos de expansión */}
               <div className="absolute inset-0 w-24 h-24 bg-white bg-opacity-10 rounded-full mx-auto animate-ping"></div>
-              <div className="absolute inset-0 w-24 h-24 bg-white bg-opacity-5 rounded-full mx-auto animate-ping" style={{animationDelay: '0.5s'}}></div>
+              <div className="absolute inset-0 w-24 h-24 bg-white bg-opacity-5 rounded-full mx-auto animate-ping" style={{ animationDelay: '0.5s' }}></div>
             </div>
 
             {/* Texto principal */}
@@ -761,7 +709,7 @@ import {
             <div className="mt-8 w-48 mx-auto">
               <div className="bg-white bg-opacity-20 rounded-full h-1">
                 <div className="bg-white h-1 rounded-full" style={{
-                  width: '100%', 
+                  width: '100%',
                   animation: 'progressBar 2.5s ease-out',
                   transformOrigin: 'left'
                 }}></div>
@@ -774,12 +722,12 @@ import {
 
           {/* Confeti animado */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-10 left-10 w-2 h-2 bg-yellow-300 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
-            <div className="absolute top-20 right-16 w-3 h-3 bg-pink-300 rounded-full animate-bounce" style={{animationDelay: '1.5s'}}></div>
-            <div className="absolute top-32 left-1/3 w-2 h-2 bg-blue-300 rounded-full animate-bounce" style={{animationDelay: '0.5s'}}></div>
-            <div className="absolute top-16 right-1/3 w-2 h-2 bg-purple-300 rounded-full animate-bounce" style={{animationDelay: '2s'}}></div>
-            <div className="absolute top-40 right-10 w-3 h-3 bg-green-300 rounded-full animate-bounce" style={{animationDelay: '1.2s'}}></div>
-            <div className="absolute top-24 left-1/4 w-2 h-2 bg-orange-300 rounded-full animate-bounce" style={{animationDelay: '0.8s'}}></div>
+            <div className="absolute top-10 left-10 w-2 h-2 bg-yellow-300 rounded-full animate-bounce" style={{ animationDelay: '1s' }}></div>
+            <div className="absolute top-20 right-16 w-3 h-3 bg-pink-300 rounded-full animate-bounce" style={{ animationDelay: '1.5s' }}></div>
+            <div className="absolute top-32 left-1/3 w-2 h-2 bg-blue-300 rounded-full animate-bounce" style={{ animationDelay: '0.5s' }}></div>
+            <div className="absolute top-16 right-1/3 w-2 h-2 bg-purple-300 rounded-full animate-bounce" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute top-40 right-10 w-3 h-3 bg-green-300 rounded-full animate-bounce" style={{ animationDelay: '1.2s' }}></div>
+            <div className="absolute top-24 left-1/4 w-2 h-2 bg-orange-300 rounded-full animate-bounce" style={{ animationDelay: '0.8s' }}></div>
           </div>
         </div>
       )}
