@@ -4,7 +4,7 @@ import {
   Fuel, Zap, Car, Store, Home, CreditCard, Gift, Users, Briefcase, CheckCircle, Package, Plus
 } from 'lucide-react';
 import HomeBar from './components/HomeBar';
-import logoBackground from './assets/logo-removebg-preview.png'; const WayletApp = () => {
+import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp = () => {
   const [currentView, setCurrentView] = useState('home');
   const [selectedPack, setSelectedPack] = useState(null);
   const [hasContractedPack, setHasContractedPack] = useState(false); // Empieza sin pack para demostrar flujo
@@ -172,7 +172,6 @@ import logoBackground from './assets/logo-removebg-preview.png'; const WayletApp
       {/* Services Section */}
       <div className="px-4 mb-6 pb-20">
         <h2 className="text-xl font-bold text-gray-800 mb-4" style={{marginTop: "30px"}}>Paga y genera saldo</h2>
-
         <div className="grid grid-cols-2 gap-4">
           {/* Repostar */}
           <div className="bg-white rounded-2xl p-6 shadow-sm">
