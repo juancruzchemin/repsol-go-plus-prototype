@@ -14,78 +14,83 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
   const [showCouponsModal, setShowCouponsModal] = useState(false);
   const [temperatureMode, setTemperatureMode] = useState('heating'); // 'heating' or 'cooling'
   const [targetTemperature, setTargetTemperature] = useState(21);
-  
+
+  // Estados para modales de ayuda
+  const [showEfficiencyHelp, setShowEfficiencyHelp] = useState(false);
+  const [showHomeTypeHelp, setShowHomeTypeHelp] = useState(false);
+  const [showSquareMetersHelp, setShowSquareMetersHelp] = useState(false);
+
   // Calcular cupones dinámicamente basado en si tiene pack contratado
   const availableCoupons = hasContractedPack ? 1 : 0;
-  
+
   // Balance del usuario con cupones dinámicos
   const userBalance = {
     saldo: 0,
     cupones: availableCoupons,
     plan: '10 cts./l'
   };
-  
-  // Estados para configuración inicial - COMENTADO PARA MÁS ADELANTE
-  // const [hasCompletedSetup, setHasCompletedSetup] = useState(false);
-  // const [homeConfig, setHomeConfig] = useState({
-  //   efficiency: '', // A, B, C, D, E, F
-  //   homeType: '', // departamento, casa, chalet, etc.
-  //   squareMeters: ''
-  // });
-  // const [calculatedPrices, setCalculatedPrices] = useState({
-  //   basicPack: 89,
-  //   goldPack: 129
-  // });
 
-  // Función para calcular precios personalizados - COMENTADO PARA MÁS ADELANTE
-  // const calculateCustomPrices = (efficiency, homeType, squareMeters) => {
-  //   const basePrices = { basicPack: 89, goldPack: 129 };
-  //   
-  //   // Factor de eficiencia energética
-  //   const efficiencyFactors = {
-  //     'A': 0.75, // -25%
-  //     'B': 0.85, // -15%
-  //     'C': 0.95, // -5%
-  //     'D': 1.0,  // base
-  //     'E': 1.15, // +15%
-  //     'F': 1.30  // +30%
-  //   };
-  //   
-  //   // Factor de tipo de hogar
-  //   const homeTypeFactors = {
-  //     'departamento': 0.90,     // -10%
-  //     'casa': 1.0,              // base
-  //     'chalet': 1.20,           // +20%
-  //     'piso-terraza': 1.05,     // +5%
-  //     'duplex': 1.10            // +10%
-  //   };
-  //   
-  //   // Factor de metros cuadrados
-  //   const getSquareMetersFactor = (meters) => {
-  //     if (meters < 50) return 0.80;      // -20%
-  //     if (meters <= 80) return 0.90;     // -10%
-  //     if (meters <= 120) return 1.0;     // base
-  //     if (meters <= 180) return 1.15;    // +15%
-  //     if (meters <= 250) return 1.30;    // +30%
-  //     return 1.50;                       // +50%
-  //   };
-  //   
-  //   const efficiencyFactor = efficiencyFactors[efficiency] || 1.0;
-  //   const homeTypeFactor = homeTypeFactors[homeType] || 1.0;
-  //   const squareMetersFactor = getSquareMetersFactor(parseInt(squareMeters));
-  //   
-  //   const totalFactor = efficiencyFactor * homeTypeFactor * squareMetersFactor;
-  //   
-  //   return {
-  //     basicPack: Math.round(basePrices.basicPack * totalFactor),
-  //     goldPack: Math.round(basePrices.goldPack * totalFactor)
-  //   };
-  // };
+  // Estados para configuración inicial
+  const [hasCompletedSetup, setHasCompletedSetup] = useState(false);
+  const [homeConfig, setHomeConfig] = useState({
+    efficiency: '', // A, B, C, D, E, F
+    homeType: '', // departamento, casa, chalet, etc.
+    squareMeters: ''
+  });
+  const [calculatedPrices, setCalculatedPrices] = useState({
+    basicPack: 89,
+    goldPack: 129
+  });
+
+  // Función para calcular precios personalizados
+  const calculateCustomPrices = (efficiency, homeType, squareMeters) => {
+    const basePrices = { basicPack: 89, goldPack: 129 };
+
+    // Factor de eficiencia energética
+    const efficiencyFactors = {
+      'A': 0.75, // -25%
+      'B': 0.85, // -15%
+      'C': 0.95, // -5%
+      'D': 1.0,  // base
+      'E': 1.15, // +15%
+      'F': 1.30  // +30%
+    };
+
+    // Factor de tipo de hogar
+    const homeTypeFactors = {
+      'departamento': 0.90,     // -10%
+      'casa': 1.0,              // base
+      'chalet': 1.20,           // +20%
+      'piso-terraza': 1.05,     // +5%
+      'duplex': 1.10            // +10%
+    };
+
+    // Factor de metros cuadrados
+    const getSquareMetersFactor = (meters) => {
+      if (meters < 50) return 0.80;      // -20%
+      if (meters <= 80) return 0.90;     // -10%
+      if (meters <= 120) return 1.0;     // base
+      if (meters <= 180) return 1.15;    // +15%
+      if (meters <= 250) return 1.30;    // +30%
+      return 1.50;                       // +50%
+    };
+
+    const efficiencyFactor = efficiencyFactors[efficiency] || 1.0;
+    const homeTypeFactor = homeTypeFactors[homeType] || 1.0;
+    const squareMetersFactor = getSquareMetersFactor(parseInt(squareMeters));
+
+    const totalFactor = efficiencyFactor * homeTypeFactor * squareMetersFactor;
+
+    return {
+      basicPack: Math.round(basePrices.basicPack * totalFactor),
+      goldPack: Math.round(basePrices.goldPack * totalFactor)
+    };
+  };
 
   // Datos simulados del pack confort gold contratado
   const contractedPack = {
     name: 'Pack Confort gold',
-    monthlyPrice: 129,
+    monthlyPrice: hasCompletedSetup ? calculatedPrices.goldPack : 129,
     renewalDate: '15 Nov 2025',
     consumption: {
       temperature: { used: 145, total: 200, unit: 'kWh climatización' },
@@ -141,189 +146,363 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
     },
   ];
 
-  // Componente de configuración inicial - COMENTADO PARA MÁS ADELANTE
-  // const InitialSetupView = () => (
-  //   <div className="min-h-screen bg-gray-50" style={{ 
-  //     overflow: 'auto',
-  //     WebkitOverflowScrolling: 'touch',
-  //     position: 'relative'
-  //   }}>
-  //     {/* Header */}
-  //     <div className="text-white p-4" style={{ background: 'linear-gradient(135deg, #f6aa00 0%, #ff4e00 100%)' }}>
-  //       <div className="text-center">
-  //         <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-3">
-  //           <Home className="w-8 h-8 text-white" />
-  //         </div>
-  //         <h1 className="text-xl font-bold mb-2">Configuremos tu Hogar</h1>
-  //         <p className="text-sm opacity-90">
-  //           Para ofrecerte el mejor precio, necesitamos conocer tu vivienda
-  //         </p>
-  //       </div>
-  //     </div>
-  //
-  //     <div className="p-4 space-y-6" style={{ 
-  //       paddingBottom: '100px', // Extra padding para el teclado móvil
-  //       minHeight: 'calc(100vh - 200px)' 
-  //     }}>
-  //       {/* Eficiencia Energética */}
-  //       <div className="bg-white rounded-2xl p-4 shadow-sm">
-  //         <h3 className="font-bold text-gray-800 mb-3">Eficiencia Energética de tu Hogar</h3>
-  //         <p className="text-gray-600 text-sm mb-4">
-  //           Puedes encontrar esta información en tu certificado energético
-  //         </p>
-  //         <div className="grid grid-cols-3 gap-2">
-  //           {['A', 'B', 'C', 'D', 'E', 'F'].map(grade => (
-  //             <button
-  //               key={grade}
-  //               onClick={() => setHomeConfig({...homeConfig, efficiency: grade})}
-  //               className={`p-3 rounded-lg border-2 transition-all ${
-  //                 homeConfig.efficiency === grade
-  //                   ? 'border-orange-500 bg-orange-50 text-orange-700'
-  //                   : 'border-gray-200 bg-gray-50 text-gray-700'
-  //               }`}
-  //             >
-  //               <div className="text-lg font-bold">{grade}</div>
-  //               <div className="text-xs">
-  //                 {grade === 'A' && 'Excelente'}
-  //                 {grade === 'B' && 'Muy buena'}
-  //                 {grade === 'C' && 'Buena'}
-  //                 {grade === 'D' && 'Regular'}
-  //                 {grade === 'E' && 'Deficiente'}
-  //                 {grade === 'F' && 'Muy deficiente'}
-  //               </div>
-  //             </button>
-  //           ))}
-  //         </div>
-  //       </div>
-  //
-  //       {/* Tipo de Hogar */}
-  //       <div className="bg-white rounded-2xl p-4 shadow-sm">
-  //         <h3 className="font-bold text-gray-800 mb-3">Tipo de Vivienda</h3>
-  //         <div className="space-y-2">
-  //           {[
-  //             { value: 'departamento', label: '🏢 Departamento', desc: 'Vivienda en edificio' },
-  //             { value: 'casa', label: '🏠 Casa unifamiliar', desc: 'Casa independiente' },
-  //             { value: 'chalet', label: '🏡 Chalet/Villa', desc: 'Casa con jardín amplio' },
-  //             { value: 'piso-terraza', label: '🏠 Piso con terraza', desc: 'Piso con espacio exterior' },
-  //             { value: 'duplex', label: '🏘️ Dúplex', desc: 'Vivienda de dos plantas' }
-  //           ].map(type => (
-  //             <button
-  //               key={type.value}
-  //               onClick={() => setHomeConfig({...homeConfig, homeType: type.value})}
-  //               className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
-  //                 homeConfig.homeType === type.value
-  //                   ? 'border-orange-500 bg-orange-50'
-  //                   : 'border-gray-200 bg-gray-50'
-  //               }`}
-  //             >
-  //               <div className="font-medium text-gray-800">{type.label}</div>
-  //               <div className="text-sm text-gray-600">{type.desc}</div>
-  //             </button>
-  //           ))}
-  //         </div>
-  //       </div>
-  //
-  //       {/* Metros Cuadrados */}
-  //       <div className="bg-white rounded-2xl p-4 shadow-sm">
-  //         <h3 className="font-bold text-gray-800 mb-3">Metros Cuadrados</h3>
-  //         <p className="text-gray-600 text-sm mb-4">
-  //           Superficie aproximada de tu vivienda
-  //         </p>
-  //         <div className="relative">
-  //           <input
-  //             type="number"
-  //             placeholder="Ej: 85"
-  //             value={homeConfig.squareMeters}
-  //             onChange={(e) => setHomeConfig({...homeConfig, squareMeters: e.target.value})}
-  //             className="w-full p-4 border-2 border-gray-200 rounded-lg text-lg text-center font-semibold focus:border-orange-500 focus:outline-none"
-  //             inputMode="numeric"
-  //             onFocus={(e) => {
-  //               // Mantener la posición actual del scroll
-  //               const currentScrollY = window.scrollY;
-  //               
-  //               // Prevenir el scroll automático
-  //               requestAnimationFrame(() => {
-  //                 window.scrollTo(0, currentScrollY);
-  //               });
-  //               
-  //               // Doble verificación después de un pequeño delay
-  //               setTimeout(() => {
-  //                 window.scrollTo(0, currentScrollY);
-  //               }, 50);
-  //               
-  //               setTimeout(() => {
-  //                 window.scrollTo(0, currentScrollY);
-  //               }, 150);
-  //             }}
-  //             onBlur={() => {
-  //               // Al perder el focus, asegurar que la posición sea estable
-  //               const currentScrollY = window.scrollY;
-  //               setTimeout(() => {
-  //                 window.scrollTo(0, currentScrollY);
-  //               }, 100);
-  //             }}
-  //             style={{ 
-  //               transform: 'translateZ(0)',
-  //               WebkitTransform: 'translateZ(0)',
-  //               WebkitAppearance: 'none',
-  //               MozAppearance: 'textfield'
-  //             }}
-  //           />
-  //         </div>
-  //         <div className="text-center mt-2 text-sm text-gray-500">m²</div>
-  //       </div>
-  //
-  //       {/* Vista previa de precio si todos los campos están completos */}
-  //       {homeConfig.efficiency && homeConfig.homeType && homeConfig.squareMeters && (
-  //         <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-4">
-  //           <h4 className="font-bold text-green-800 mb-2">💡 Precio Personalizado Calculado</h4>
-  //           {(() => {
-  //             const prices = calculateCustomPrices(homeConfig.efficiency, homeConfig.homeType, homeConfig.squareMeters);
-  //             return (
-  //               <div className="space-y-2">
-  //                 <div className="flex justify-between items-center">
-  //                   <span className="text-sm font-medium text-green-700">Pack Confort Básico</span>
-  //                   <span className="text-lg font-bold text-green-800">€{prices.basicPack}/mes</span>
-  //                 </div>
-  //                 <div className="flex justify-between items-center">
-  //                   <span className="text-sm font-medium text-green-700">Pack Confort Gold</span>
-  //                   <span className="text-lg font-bold text-green-800">€{prices.goldPack}/mes</span>
-  //                 </div>
-  //                 <div className="text-xs text-green-600 mt-2">
-  //                   ⭐ Precio personalizado basado en tu hogar
-  //                 </div>
-  //               </div>
-  //             );
-  //           })()}
-  //         </div>
-  //       )}
-  //
-  //       {/* Botón continuar */}
-  //       <button
-  //         onClick={() => {
-  //           if (homeConfig.efficiency && homeConfig.homeType && homeConfig.squareMeters) {
-  //             const prices = calculateCustomPrices(homeConfig.efficiency, homeConfig.homeType, homeConfig.squareMeters);
-  //             setCalculatedPrices(prices);
-  //             setHasCompletedSetup(true);
-  //             setCurrentView('home-services');
-  //           }
-  //         }}
-  //         disabled={!homeConfig.efficiency || !homeConfig.homeType || !homeConfig.squareMeters}
-  //         className={`w-full py-4 rounded-xl font-bold text-lg transition-all ${
-  //           homeConfig.efficiency && homeConfig.homeType && homeConfig.squareMeters
-  //             ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg hover:shadow-xl'
-  //             : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-  //         }`}
-  //       >
-  //         Continuar y Ver Packs Personalizados
-  //       </button>
-  //
-  //       <p className="text-center text-xs text-gray-500">
-  //         Esta información solo se usa para personalizar tu oferta
-  //       </p>
-  //     </div>
-  //   </div>
-  // );
+  // Componente de configuración inicial
+  const InitialSetupView = () => (
+    <div className="min-h-screen bg-gray-50" style={{
+      overflow: 'auto',
+      WebkitOverflowScrolling: 'touch',
+      position: 'relative'
+    }}>
+      {/* Header */}
+      <div className="text-white p-4 relative" style={{ background: 'linear-gradient(135deg, #f6aa00 0%, #ff4e00 100%)' }}>
+        {/* Botón de volver - posicionado absolutamente */}
+        <button
+          onClick={() => setCurrentView('home')}
+          className="absolute top-4 left-4 text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-full transition-colors z-10"
+          title="Volver al inicio"
+        >
+          ←
+        </button>
+
+        {/* Contenido central - mantiene centrado */}
+        <div className="text-center">
+          <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-3">
+            <Home className="w-8 h-8 text-white" />
+          </div>
+          <h1 className="text-xl font-bold mb-2">Configuremos tu Hogar</h1>
+          <p className="text-sm opacity-90">
+            Para ofrecerte el mejor precio, necesitamos conocer tu vivienda
+          </p>
+        </div>
+      </div>
+
+      <div className="p-4 space-y-6" style={{
+        paddingBottom: '100px', // Extra padding para el teclado móvil
+        minHeight: 'calc(100vh - 200px)'
+      }}>
+        {/* Eficiencia Energética */}
+        <div className="bg-white rounded-2xl p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-bold text-gray-800">Eficiencia Energética de tu Hogar</h3>
+            <button
+              onClick={() => setShowEfficiencyHelp(true)}
+              className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center hover:bg-blue-200 transition-colors"
+              title="¿Cómo saber mi eficiencia energética?"
+            >
+              <span className="text-blue-600 text-sm font-bold">?</span>
+            </button>
+          </div>
+          <p className="text-gray-600 text-sm mb-4">
+            Puedes encontrar esta información en tu certificado energético
+          </p>
+          <div className="grid grid-cols-3 gap-2">
+            {['A', 'B', 'C', 'D', 'E', 'F'].map(grade => (
+              <button
+                key={grade}
+                onClick={() => setHomeConfig({ ...homeConfig, efficiency: grade })}
+                className={`p-3 rounded-lg border-2 transition-all ${homeConfig.efficiency === grade
+                  ? 'border-orange-500 bg-orange-50 text-orange-700'
+                  : 'border-gray-200 bg-gray-50 text-gray-700'
+                  }`}
+              >
+                <div className="text-lg font-bold">{grade}</div>
+                <div className="text-xs">
+                  {grade === 'A' && 'Excelente'}
+                  {grade === 'B' && 'Muy buena'}
+                  {grade === 'C' && 'Buena'}
+                  {grade === 'D' && 'Regular'}
+                  {grade === 'E' && 'Deficiente'}
+                  {grade === 'F' && 'Muy deficiente'}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Tipo de Hogar */}
+        <div className="bg-white rounded-2xl p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-bold text-gray-800">Tipo de Vivienda</h3>
+            <button
+              onClick={() => setShowHomeTypeHelp(true)}
+              className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center hover:bg-blue-200 transition-colors"
+              title="¿Cómo elegir mi tipo de vivienda?"
+            >
+              <span className="text-blue-600 text-sm font-bold">?</span>
+            </button>
+          </div>
+          <div className="space-y-2">
+            {[
+              { value: 'departamento', label: '🏢 Departamento', desc: 'Vivienda en edificio' },
+              { value: 'casa', label: '🏠 Casa unifamiliar', desc: 'Casa independiente' },
+              { value: 'chalet', label: '🏡 Chalet/Villa', desc: 'Casa con jardín amplio' },
+              { value: 'piso-terraza', label: '🏠 Piso con terraza', desc: 'Piso con espacio exterior' },
+              { value: 'duplex', label: '🏘️ Dúplex', desc: 'Vivienda de dos plantas' }
+            ].map(type => (
+              <button
+                key={type.value}
+                onClick={() => setHomeConfig({ ...homeConfig, homeType: type.value })}
+                className={`w-full p-3 rounded-lg border-2 text-left transition-all ${homeConfig.homeType === type.value
+                  ? 'border-orange-500 bg-orange-50'
+                  : 'border-gray-200 bg-gray-50'
+                  }`}
+              >
+                <div className="font-medium text-gray-800">{type.label}</div>
+                <div className="text-sm text-gray-600">{type.desc}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Metros Cuadrados */}
+        <div className="bg-white rounded-2xl p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-bold text-gray-800">Metros Cuadrados</h3>
+            <button
+              onClick={() => setShowSquareMetersHelp(true)}
+              className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center hover:bg-blue-200 transition-colors"
+              title="¿Cómo calcular mis metros cuadrados?"
+            >
+              <span className="text-blue-600 text-sm font-bold">?</span>
+            </button>
+          </div>
+          <p className="text-gray-600 text-sm mb-4">
+            Superficie aproximada de tu vivienda
+          </p>
+          <div className="relative">
+            <input
+              type="number"
+              placeholder="Ej: 85"
+              value={homeConfig.squareMeters}
+              onChange={(e) => setHomeConfig({ ...homeConfig, squareMeters: e.target.value })}
+              className="w-full p-4 border-2 border-gray-200 rounded-lg text-lg text-center font-semibold focus:border-orange-500 focus:outline-none"
+              inputMode="numeric"
+              style={{
+                transform: 'translateZ(0)',
+                WebkitTransform: 'translateZ(0)',
+                WebkitAppearance: 'none',
+                MozAppearance: 'textfield',
+                position: 'relative',
+                zIndex: 1
+              }}
+              onFocus={(e) => {
+                // Prevenir el scroll automático del navegador
+                e.preventDefault();
+                e.target.scrollIntoView = () => { }; // Deshabilitar scrollIntoView
+              }}
+              onInput={(e) => {
+                // Mantener la vista fija durante la entrada
+                e.preventDefault();
+                const value = e.target.value;
+                setHomeConfig({ ...homeConfig, squareMeters: value });
+              }}
+            />
+          </div>
+          <div className="text-center mt-2 text-sm text-gray-500">m²</div>
+        </div>
+
+        {/* Vista previa de precio si todos los campos están completos */}
+        {homeConfig.efficiency && homeConfig.homeType && homeConfig.squareMeters && (
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-4">
+            <h4 className="font-bold text-green-800 mb-2">💡 Precio Personalizado Calculado</h4>
+            {(() => {
+              const prices = calculateCustomPrices(homeConfig.efficiency, homeConfig.homeType, homeConfig.squareMeters);
+              return (
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-green-700">Pack Confort Básico</span>
+                    <span className="text-lg font-bold text-green-800">€{prices.basicPack}/mes</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-green-700">Pack Confort Gold</span>
+                    <span className="text-lg font-bold text-green-800">€{prices.goldPack}/mes</span>
+                  </div>
+                  <div className="text-xs text-green-600 mt-2">
+                    ⭐ Precio personalizado basado en tu hogar
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        )}
+
+        {/* Botón continuar */}
+        <button
+          onClick={() => {
+            if (homeConfig.efficiency && homeConfig.homeType && homeConfig.squareMeters) {
+              const prices = calculateCustomPrices(homeConfig.efficiency, homeConfig.homeType, homeConfig.squareMeters);
+              setCalculatedPrices(prices);
+              setHasCompletedSetup(true);
+              setCurrentView('home-services');
+            }
+          }}
+          disabled={!homeConfig.efficiency || !homeConfig.homeType || !homeConfig.squareMeters}
+          className={`w-full py-4 rounded-xl font-bold text-lg transition-all ${homeConfig.efficiency && homeConfig.homeType && homeConfig.squareMeters
+            ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg hover:shadow-xl'
+            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+            }`}
+        >
+          Continuar y Ver Packs Personalizados
+        </button>
+
+        <p className="text-center text-xs text-gray-500">
+          Esta información solo se usa para personalizar tu oferta
+        </p>
+      </div>
+
+      {/* Modal de ayuda - Eficiencia Energética */}
+      {showEfficiencyHelp && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl">
+            <div className="text-center mb-4">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <span className="text-2xl">🏠</span>
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">¿Cómo conocer mi eficiencia energética?</h3>
+            </div>
+
+            <div className="space-y-4 text-sm text-gray-700">
+              <div>
+                <h4 className="font-semibold text-gray-800 mb-2">🔍 Busca en tu certificado energético:</h4>
+                <p>Es un documento obligatorio que indica la eficiencia de tu vivienda con una letra de la A (más eficiente) a la F (menos eficiente).</p>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-gray-800 mb-2">📍 Dónde encontrarlo:</h4>
+                <ul className="list-disc list-inside space-y-1 ml-2">
+                  <li>Contrato de alquiler o compra</li>
+                  <li>Anuncios inmobiliarios</li>
+                  <li>Registro de tu comunidad autónoma</li>
+                  <li>Solicítalo a tu propietario</li>
+                </ul>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <p className="text-blue-800 text-xs">
+                  💡 <strong>Si no lo tienes:</strong> Selecciona "D" como estimación media. Luego podrás actualizarlo para obtener precios más precisos.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowEfficiencyHelp(false)}
+              className="w-full mt-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de ayuda - Tipo de Vivienda */}
+      {showHomeTypeHelp && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl">
+            <div className="text-center mb-4">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <span className="text-2xl">🏡</span>
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">¿Qué tipo de vivienda tienes?</h3>
+            </div>
+
+            <div className="space-y-3 text-sm text-gray-700">
+              <div className="bg-gray-50 rounded-lg p-3">
+                <h4 className="font-semibold text-gray-800 mb-1">🏢 Departamento</h4>
+                <p>Vivienda en edificio con vecinos arriba, abajo o a los lados</p>
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-3">
+                <h4 className="font-semibold text-gray-800 mb-1">🏠 Casa unifamiliar</h4>
+                <p>Casa independiente, sin viviendas adosadas</p>
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-3">
+                <h4 className="font-semibold text-gray-800 mb-1">🏡 Chalet/Villa</h4>
+                <p>Casa independiente con jardín o terreno amplio</p>
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-3">
+                <h4 className="font-semibold text-gray-800 mb-1">🏠 Piso con terraza</h4>
+                <p>Apartamento con terraza, balcón o patio</p>
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-3">
+                <h4 className="font-semibold text-gray-800 mb-1">🏘️ Dúplex</h4>
+                <p>Vivienda distribuida en dos plantas</p>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <p className="text-blue-800 text-xs">
+                  💡 <strong>Tip:</strong> El tipo de vivienda afecta las necesidades de climatización. Las casas independientes suelen requerir más energía que los departamentos.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowHomeTypeHelp(false)}
+              className="w-full mt-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de ayuda - Metros Cuadrados */}
+      {showSquareMetersHelp && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl">
+            <div className="text-center mb-4">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <span className="text-2xl">📐</span>
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">¿Cómo calcular los metros cuadrados?</h3>
+            </div>
+
+            <div className="space-y-4 text-sm text-gray-700">
+              <div>
+                <h4 className="font-semibold text-gray-800 mb-2">📋 Dónde encontrar la información:</h4>
+                <ul className="list-disc list-inside space-y-1 ml-2">
+                  <li>Contrato de alquiler o escritura</li>
+                  <li>Cédula de habitabilidad</li>
+                  <li>Anuncio inmobiliario original</li>
+                  <li>Registro de la propiedad</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-gray-800 mb-2">📏 Si necesitas medirlo:</h4>
+                <p>Multiplica el largo × ancho de cada habitación y suma todos los espacios habitables (sin incluir terrazas, balcones o trasteros).</p>
+              </div>
+
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                <h4 className="font-semibold text-green-800 mb-1">📊 Referencia por habitaciones:</h4>
+                <div className="space-y-1 text-green-700">
+                  <p>• 1 dormitorio: 40-60 m²</p>
+                  <p>• 2 dormitorios: 60-80 m²</p>
+                  <p>• 3 dormitorios: 80-120 m²</p>
+                  <p>• 4+ dormitorios: 120+ m²</p>
+                </div>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <p className="text-blue-800 text-xs">
+                  💡 <strong>Nota:</strong> Una estimación aproximada es suficiente. Esto nos ayuda a calcular las necesidades de climatización de tu hogar.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowSquareMetersHelp(false)}
+              className="w-full mt-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
   const HomeScreen = () => (
     <div className="min-h-screen bg-gray-50">
@@ -367,10 +546,9 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
               <div className="text-gray-600 text-sm mb-1">Saldo</div>
               <div className="text-2xl font-bold text-gray-800">{userBalance.saldo} €</div>
             </div>
-            <div 
-              className={`flex-1 bg-white bg-opacity-80 rounded-2xl p-4 backdrop-blur-sm ${
-                availableCoupons > 0 ? 'cursor-pointer hover:bg-opacity-90 transition-all' : ''
-              }`}
+            <div
+              className={`flex-1 bg-white bg-opacity-80 rounded-2xl p-4 backdrop-blur-sm ${availableCoupons > 0 ? 'cursor-pointer hover:bg-opacity-90 transition-all' : ''
+                }`}
               onClick={() => availableCoupons > 0 && setShowCouponsModal(true)}
             >
               <div className="text-gray-600 text-sm mb-1">Cupones</div>
@@ -399,7 +577,7 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
               className="w-full bg-white rounded-2xl p-4 shadow-lg border border-gray-200 hover:shadow-xl transition-shadow"
             >
               <div className="flex items-center gap-4">
-                <div 
+                <div
                   className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
                   style={{
                     background: 'linear-gradient(135deg, #f6aa00 0%, #ff4e00 100%)'
@@ -416,8 +594,12 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
                   </p>
                 </div>
                 <div className="text-right">
-                  <div className="font-bold text-lg" style={{ color: '#ff4e00' }}>€129/mes</div>
-                  <div className="text-gray-500 text-xs">Renovación automática</div>
+                  <div className="font-bold text-lg" style={{ color: '#ff4e00' }}>
+                    €{hasCompletedSetup ? calculatedPrices.goldPack : 129}/mes
+                  </div>
+                  <div className="text-gray-500 text-xs">
+                    {hasCompletedSetup ? 'Precio personalizado' : 'Renovación automática'}
+                  </div>
                 </div>
               </div>
             </button>
@@ -452,7 +634,13 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
               </div>
 
               <button
-                onClick={() => setCurrentView('home-services')}
+                onClick={() => {
+                  if (!hasCompletedSetup) {
+                    setCurrentView('initial-setup');
+                  } else {
+                    setCurrentView('home-services');
+                  }
+                }}
                 className="w-full bg-white text-orange-600 py-3 rounded-xl font-bold text-base"
               >
                 Temperatura como Servicio
@@ -469,7 +657,13 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
           {/* Hogar */}
           <div
             className="bg-white rounded-2xl p-6 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
-            onClick={() => setCurrentView('home-services')}
+            onClick={() => {
+              if (!hasCompletedSetup) {
+                setCurrentView('initial-setup');
+              } else {
+                setCurrentView('home-services');
+              }
+            }}
           >
             <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-4">
               <Home className="w-6 h-6 text-orange-600" />
@@ -636,100 +830,117 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
 
       {hasContractedPack ? (
         /* Vista de consumos y domotica del hogar */
-        <div className="p-4">
-          {/* Temperature Control Card */}
-          <div className="bg-white rounded-2xl p-4 shadow-sm mb-4">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <div className="relative">
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-400 to-blue-400"></div>
-                    <div className="absolute -bottom-1 -right-1 text-xs">🌡️</div>
-                  </div>
+        <div className="p-4 mb-20 space-y-6">
+          {/* Temperature Control */}
+          <div className="bg-white rounded-2xl p-4 shadow-sm">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <div className="relative">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-400 to-blue-400"></div>
+                  <div className="absolute -bottom-1 -right-1 text-xs">🌡️</div>
                 </div>
-                <div>
-                  <h3 className="font-bold text-gray-800">Temperatura del Hogar</h3>
-                  <p className="text-gray-600 text-sm">Climatización inteligente</p>
-                </div>
+              </div>
+              <div className="flex-1">
+                <h4 className="font-semibold text-gray-800">Control de Temperatura</h4>
+                <p className="text-gray-600 text-sm">Climatización inteligente activa</p>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-blue-600">22°C</div>
-                <div className="text-gray-500 text-xs">Objetivo: 21°C</div>
+                <div className="text-xl font-bold text-blue-600">22°C</div>
+                <div className="text-xs text-gray-500">Objetivo: {targetTemperature}°C</div>
               </div>
             </div>
 
-            {/* <div className="bg-gray-50 rounded-lg p-3 mb-3">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-600 text-sm">Consumo mensual</span>
-                <span className="font-semibold text-gray-800">145 kWh de 200 kWh</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-blue-500 h-2 rounded-full" style={{ width: '72.5%' }}></div>
-              </div>
-            </div> */}
-
-            <div className="flex gap-2">
-              <button className="flex-1 bg-orange-100 text-orange-600 py-2 px-3 rounded-lg text-sm font-medium">
-                🔥 Calefacción ON
-              </button>
-              <button className="flex-1 bg-blue-100 text-blue-600 py-2 px-3 rounded-lg text-sm font-medium">
-                ❄️ Aire Acond. OFF
-              </button>
-            </div>
-          </div>
-
-          {/* Smart Devices */}
-          <div className="bg-white rounded-2xl p-4 shadow-sm mb-4">
-            <h3 className="font-bold text-gray-800 mb-4">Dispositivos Conectados</h3>
-
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              <div className="bg-gray-50 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">💡 Iluminación</span>
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                </div>
-                <div className="text-xs text-gray-600">8 dispositivos</div>
-              </div>
-
-              <div className="bg-gray-50 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">🔒 Seguridad</span>
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                </div>
-                <div className="text-xs text-gray-600">Sistema armado</div>
-              </div>
-
-              <div 
-                className="bg-orange-50 border border-orange-200 rounded-lg p-3 cursor-pointer hover:bg-orange-100 transition-colors"
-                onClick={() => setShowDeviceAlertModal(true)}
+            {/* Mode Selection */}
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              <button
+                onClick={() => {
+                  setTemperatureMode('heating');
+                  setTargetTemperature(26);
+                }}
+                className={`rounded-lg p-3 text-center transition-colors ${temperatureMode === 'heating'
+                  ? 'bg-orange-100 text-orange-600 border-2 border-orange-300'
+                  : 'bg-gray-100 text-gray-600'
+                  }`}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">📺 Entretenimiento</span>
-                  <div className="w-4 h-4 bg-orange-400 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">!</span>
+                <div className="text-sm font-medium">🔥 Calefacción</div>
+                <div className="text-xs">{temperatureMode === 'heating' ? 'Activa' : 'Standby'}</div>
+              </button>
+              <button
+                onClick={() => {
+                  setTemperatureMode('cooling');
+                  setTargetTemperature(20);
+                }}
+                className={`rounded-lg p-3 text-center transition-colors ${temperatureMode === 'cooling'
+                  ? 'bg-blue-100 text-blue-600 border-2 border-blue-300'
+                  : 'bg-gray-100 text-gray-600'
+                  }`}
+              >
+                <div className="text-sm font-medium">❄️ A/C</div>
+                <div className="text-xs">{temperatureMode === 'cooling' ? 'Activa' : 'Standby'}</div>
+              </button>
+            </div>
+
+            {/* Temperature Control */}
+            <div className="bg-gray-50 rounded-lg p-4 mb-3">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-medium text-gray-700">Temperatura objetivo</span>
+                <span className="text-lg font-bold text-gray-800">{targetTemperature}°C</span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => {
+                    const min = temperatureMode === 'cooling' ? 18 : 26;
+                    if (targetTemperature > min) {
+                      setTargetTemperature(targetTemperature - 1);
+                    }
+                  }}
+                  className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors"
+                  disabled={targetTemperature <= (temperatureMode === 'cooling' ? 18 : 26)}
+                >
+                  <span className="text-lg font-bold text-gray-600">−</span>
+                </button>
+
+                <div className="flex-1 relative">
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className={`h-2 rounded-full transition-all duration-500 ${temperatureMode === 'cooling' ? 'bg-blue-500' : 'bg-orange-500'
+                        }`}
+                      style={{
+                        width: temperatureMode === 'cooling'
+                          ? `${Math.max(8, ((targetTemperature - 18) / (22 - 18)) * 100)}%`
+                          : `${Math.max(8, ((targetTemperature - 26) / (28 - 26)) * 100)}%`
+                      }}
+                    ></div>
+                  </div>
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>{temperatureMode === 'cooling' ? '18°C' : '26°C'}</span>
+                    <span>{temperatureMode === 'cooling' ? '22°C' : '28°C'}</span>
                   </div>
                 </div>
-                <div className="text-xs text-orange-600 font-medium">Requiere atención</div>
-              </div>
 
-              <div className="bg-gray-50 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">🌿 Jardín Smart</span>
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                </div>
-                <div className="text-xs text-gray-600">Riego automático</div>
+                <button
+                  onClick={() => {
+                    const max = temperatureMode === 'cooling' ? 22 : 28;
+                    if (targetTemperature < max) {
+                      setTargetTemperature(targetTemperature + 1);
+                    }
+                  }}
+                  className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors"
+                  disabled={targetTemperature >= (temperatureMode === 'cooling' ? 22 : 28)}
+                >
+                  <span className="text-lg font-bold text-gray-600">+</span>
+                </button>
               </div>
             </div>
 
-            {/* Disclaimer */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <div className="flex items-start gap-2">
-                <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-white text-xs">ⓘ</span>
-                </div>
-                <div className="text-xs text-blue-800">
-                  <span className="font-semibold">Próximamente:</span> Podrás controlar todos tus dispositivos inteligentes directamente desde esta aplicación, incluyendo encendido/apagado, programación y automatización avanzada.
-                </div>
+            <div className="bg-gray-50 rounded-lg p-2">
+              <div className="flex justify-between text-xs text-gray-600 mb-1">
+                <span>Consumo mensual medido por Google Home</span>
+                <span>65 kWh de 100 kWh</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-1">
+                <div className="bg-blue-500 h-1 rounded-full" style={{ width: '65%' }}></div>
               </div>
             </div>
           </div>
@@ -750,6 +961,68 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
               <button className="bg-orange-50 text-orange-700 py-3 px-4 rounded-lg font-medium text-sm">
                 ⚡ Ahorro Energía
               </button>
+            </div>
+          </div>
+
+          {/* Smart Home Devices */}
+          <div className="bg-white rounded-2xl p-4 shadow-sm">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                <Home className="w-6 h-6 text-purple-600" />
+              </div>
+              <div className="flex-1">
+                <h4 className="font-semibold text-gray-800">Dispositivos conectados a Google Home</h4>
+                <p className="text-gray-600 text-sm">15 dispositivos conectados</p>
+              </div>
+              <button
+                className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors"
+              >
+                <Plus className="w-4 h-4 text-gray-600" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              <div className="bg-gray-50 rounded p-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium">💡 Luces</span>
+                  <CheckCircle className="w-3 h-3 text-green-500" />
+                </div>
+              </div>
+              <div className="bg-gray-50 rounded p-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium">🔒 Seguridad</span>
+                  <CheckCircle className="w-3 h-3 text-green-500" />
+                </div>
+              </div>
+              <div
+                className="bg-orange-50 border border-orange-200 rounded p-2 cursor-pointer hover:bg-orange-100 transition-colors"
+                onClick={() => setShowDeviceAlertModal(true)}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium">📺 Entretenimiento</span>
+                  <div className="w-3 h-3 bg-orange-400 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">!</span>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gray-50 rounded p-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium">🌿 Jardín</span>
+                  <CheckCircle className="w-3 h-3 text-green-500" />
+                </div>
+              </div>
+            </div>
+
+            {/* Disclaimer compacto para vista de consumos */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-2">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <span className="text-white text-xs">ⓘ</span>
+                </div>
+                <div className="text-xs text-blue-800">
+                  <span className="font-semibold">Próximamente:</span> Control completo de dispositivos desde la app.
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -776,7 +1049,7 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
                   <p className="text-sm opacity-90">Temperatura como servicio</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold">€89</p>
+                  <p className="text-2xl font-bold">€{calculatedPrices.basicPack}</p>
                   <p className="text-xs opacity-80">/mes</p>
                 </div>
               </div>
@@ -791,37 +1064,25 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
                   <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                   <span className="text-sm">Control de temperatura inteligente</span>
                 </div>
-                {/* <div className="flex items-center gap-3">
-                  <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                  <span className="text-sm">Aire acondicionado + Calefacción</span>
-                </div> */}
-                {/* <div className="flex items-center gap-3">
-                  <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                  <span className="text-sm">💡 Domótica básica incluida</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                  <span className="text-sm">📱 Control remoto desde la app</span>
-                </div> */}
                 <div className="flex items-center gap-3">
                   <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                   <span className="text-sm">Hub de control energético</span>
-                </div>  
-                 <div className="flex items-center gap-3">
+                </div>
+                <div className="flex items-center gap-3">
                   <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                   <span className="text-sm">Sugerencias básicas de eficiencias energeticas</span>
-                </div>               
+                </div>
               </div>
 
               <button
                 onClick={() => {
                   setSelectedPack({
-                    id: 2,
-                    name: 'Pack Hogar Inteligente',
+                    id: 1,
+                    name: 'Pack Confort Básico',
                     subtitle: 'Temperatura como servicio',
-                    monthlyPrice: 89,
-                    originalPrice: 180,
-                    savings: 91,
+                    monthlyPrice: calculatedPrices.basicPack,
+                    originalPrice: 89,
+                    savings: Math.max(0, 89 - calculatedPrices.basicPack),
                     icon: Home,
                     color: 'from-orange-400 to-red-500',
                     features: [
@@ -829,14 +1090,15 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
                       'Hub de control energético',
                       'Sugerencias básicas de eficiencias energeticas'
                     ],
-                    bestFor: 'Perfecto para mantener tu hogar a la temperatura ideal todo el año'
+                    bestFor: 'Perfecto para mantener tu hogar a la temperatura ideal todo el año',
+                    isPersonalized: hasCompletedSetup
                   });
                   setCurrentView('pack-detail');
                 }}
                 className="w-full text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
                 style={{ background: 'linear-gradient(135deg, #f6aa00 0%, #ff4e00 100%)' }}
               >
-                Contratar Pack - €89/mes
+                Contratar Pack - €{calculatedPrices.basicPack}/mes
               </button>
             </div>
           </div>
@@ -851,7 +1113,7 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
                   <p className="text-sm opacity-90">Temperatura como servicio con domotica incluida</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold">€129</p>
+                  <p className="text-2xl font-bold">€{calculatedPrices.goldPack}</p>
                   <p className="text-xs opacity-80">/mes</p>
                 </div>
               </div>
@@ -865,11 +1127,11 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
                 <div className="flex items-center gap-3">
                   <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                   <span className="text-sm">Control de temperatura inteligente</span>
-                </div>    
+                </div>
                 <div className="flex items-center gap-3">
                   <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                   <span className="text-sm">Hub de control energetico</span>
-                </div>             
+                </div>
                 <div className="flex items-center gap-3">
                   <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                   <span className="text-sm">Domótica básica incluida</span>
@@ -886,9 +1148,9 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
                     id: 2,
                     name: 'Pack Confort gold',
                     subtitle: 'Temperatura como servicio y domotica incluida',
-                    monthlyPrice: 129,
-                    originalPrice: 200,
-                    savings: 71,
+                    monthlyPrice: calculatedPrices.goldPack,
+                    originalPrice: 129,
+                    savings: Math.max(0, 129 - calculatedPrices.goldPack),
                     icon: Home,
                     color: 'from-orange-400 to-red-500',
                     features: [
@@ -897,14 +1159,15 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
                       'Domótica básica incluida',
                       'Optimización energética automática',
                     ],
-                    bestFor: 'Perfecto para mantener tu hogar a la temperatura ideal todo el año'
+                    bestFor: 'Perfecto para mantener tu hogar a la temperatura ideal todo el año',
+                    isPersonalized: hasCompletedSetup
                   });
                   setCurrentView('pack-detail');
                 }}
                 className="w-full text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
                 style={{ background: 'linear-gradient(135deg, #f6aa00 0%, #ff4e00 100%)' }}
               >
-                Contratar Pack - €129/mes
+                Contratar Pack - €{calculatedPrices.goldPack}/mes
               </button>
             </div>
           </div>
@@ -958,185 +1221,31 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
           </div>
         </div>
       </div>
-      <div className="p-4">       
+      <div className="p-4">
 
         {/* Consumption Cards */}
         <div className="space-y-4">
-          {/* Temperature Control */}
-          <div className="bg-white rounded-2xl p-4 shadow-sm">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <div className="relative">
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-400 to-blue-400"></div>
-                  <div className="absolute -bottom-1 -right-1 text-xs">🌡️</div>
+          {/* Pack Status Card */}
+          <div className="bg-white rounded-2xl p-4 shadow-sm mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                  <CheckCircle className="w-6 h-6 text-green-600" />
                 </div>
-              </div>
-              <div className="flex-1">
-                <h4 className="font-semibold text-gray-800">Control de Temperatura</h4>
-                <p className="text-gray-600 text-sm">Climatización inteligente activa</p>
+                <div>
+                  <h3 className="font-bold text-gray-800">{contractedPack.name}</h3>
+                  <p className="text-gray-600 text-sm">Pack activo</p>
+                </div>
               </div>
               <div className="text-right">
-                <div className="text-xl font-bold text-blue-600">22°C</div>
-                <div className="text-xs text-gray-500">Objetivo: {targetTemperature}°C</div>
+                <div className="text-green-600 font-bold text-lg">€{contractedPack.monthlyPrice}</div>
+                <div className="text-gray-500 text-xs">por mes</div>
               </div>
             </div>
-            
-            {/* Mode Selection */}
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              <button 
-                onClick={() => {
-                  setTemperatureMode('heating');
-                  setTargetTemperature(26);
-                }}
-                className={`rounded-lg p-3 text-center transition-colors ${
-                  temperatureMode === 'heating' 
-                    ? 'bg-orange-100 text-orange-600 border-2 border-orange-300' 
-                    : 'bg-gray-100 text-gray-600'
-                }`}
-              >
-                <div className="text-sm font-medium">🔥 Calefacción</div>
-                <div className="text-xs">{temperatureMode === 'heating' ? 'Activa' : 'Standby'}</div>
-              </button>
-              <button 
-                onClick={() => {
-                  setTemperatureMode('cooling');
-                  setTargetTemperature(20);
-                }}
-                className={`rounded-lg p-3 text-center transition-colors ${
-                  temperatureMode === 'cooling' 
-                    ? 'bg-blue-100 text-blue-600 border-2 border-blue-300' 
-                    : 'bg-gray-100 text-gray-600'
-                }`}
-              >
-                <div className="text-sm font-medium">❄️ A/C</div>
-                <div className="text-xs">{temperatureMode === 'cooling' ? 'Activa' : 'Standby'}</div>
-              </button>
-            </div>
-
-            {/* Temperature Control */}
-            <div className="bg-gray-50 rounded-lg p-4 mb-3">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-medium text-gray-700">Temperatura objetivo</span>
-                <span className="text-lg font-bold text-gray-800">{targetTemperature}°C</span>
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => {
-                    const min = temperatureMode === 'cooling' ? 18 : 26;
-                    if (targetTemperature > min) {
-                      setTargetTemperature(targetTemperature - 1);
-                    }
-                  }}
-                  className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors"
-                  disabled={targetTemperature <= (temperatureMode === 'cooling' ? 18 : 26)}
-                >
-                  <span className="text-lg font-bold text-gray-600">−</span>
-                </button>
-                
-                <div className="flex-1 relative">
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className={`h-2 rounded-full transition-all duration-500 ${
-                        temperatureMode === 'cooling' ? 'bg-blue-500' : 'bg-orange-500'
-                      }`}
-                      style={{ 
-                        width: temperatureMode === 'cooling' 
-                          ? `${Math.max(8, ((targetTemperature - 18) / (22 - 18)) * 100)}%`
-                          : `${Math.max(8, ((targetTemperature - 26) / (28 - 26)) * 100)}%`
-                      }}
-                    ></div>
-                  </div>
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>{temperatureMode === 'cooling' ? '18°C' : '26°C'}</span>
-                    <span>{temperatureMode === 'cooling' ? '22°C' : '28°C'}</span>
-                  </div>
-                </div>
-                
-                <button
-                  onClick={() => {
-                    const max = temperatureMode === 'cooling' ? 22 : 28;
-                    if (targetTemperature < max) {
-                      setTargetTemperature(targetTemperature + 1);
-                    }
-                  }}
-                  className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors"
-                  disabled={targetTemperature >= (temperatureMode === 'cooling' ? 22 : 28)}
-                >
-                  <span className="text-lg font-bold text-gray-600">+</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="bg-gray-50 rounded-lg p-2">
-              <div className="flex justify-between text-xs text-gray-600 mb-1">
-                <span>Consumo mensual medido por Google Home</span>
-                <span>65 kWh de 100 kWh</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-1">
-                <div className="bg-blue-500 h-1 rounded-full" style={{ width: '65%' }}></div>
-              </div>
-            </div>
-          </div>
-
-          {/* Smart Home Devices */}
-          <div className="bg-white rounded-2xl p-4 shadow-sm">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                <Home className="w-6 h-6 text-purple-600" />
-              </div>
-              <div className="flex-1">
-                <h4 className="font-semibold text-gray-800">Dispositivos conectados a Google Home</h4>
-                <p className="text-gray-600 text-sm">15 dispositivos conectados</p>
-              </div>
-              <button
-                className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors"
-              >
-                <Plus className="w-4 h-4 text-gray-600" />
-              </button>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              <div className="bg-gray-50 rounded p-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium">💡 Luces</span>
-                  <CheckCircle className="w-3 h-3 text-green-500" />
-                </div>
-              </div>
-              <div className="bg-gray-50 rounded p-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium">🔒 Seguridad</span>
-                  <CheckCircle className="w-3 h-3 text-green-500" />
-                </div>
-              </div>
-              <div 
-                className="bg-orange-50 border border-orange-200 rounded p-2 cursor-pointer hover:bg-orange-100 transition-colors"
-                onClick={() => setShowDeviceAlertModal(true)}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium">📺 Entretenimiento</span>
-                  <div className="w-3 h-3 bg-orange-400 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">!</span>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 rounded p-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium">🌿 Jardín</span>
-                  <CheckCircle className="w-3 h-3 text-green-500" />
-                </div>
-              </div>
-            </div>
-
-            {/* Disclaimer compacto para vista de consumos */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-2">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-white text-xs">ⓘ</span>
-                </div>
-                <div className="text-xs text-blue-800">
-                  <span className="font-semibold">Próximamente:</span> Control completo de dispositivos desde la app.
-                </div>
+            <div className="bg-gray-50 rounded-lg p-3">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600 text-sm">Próxima renovación</span>
+                <span className="font-semibold text-gray-800">{contractedPack.renewalDate}</span>
               </div>
             </div>
           </div>
@@ -1248,61 +1357,6 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
               ></div>
             </div>
           </div>
-
-          {/* Pack Status Card */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-green-600" />
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-800">{contractedPack.name}</h3>
-                <p className="text-gray-600 text-sm">Pack activo</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-green-600 font-bold text-lg">€{contractedPack.monthlyPrice}</div>
-              <div className="text-gray-500 text-xs">por mes</div>
-            </div>
-          </div>
-          <div className="bg-gray-50 rounded-lg p-3">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600 text-sm">Próxima renovación</span>
-              <span className="font-semibold text-gray-800">{contractedPack.renewalDate}</span>
-            </div>
-          </div>
-        </div>
-
-          {/* Waylet Cards */}
-          {/* <div className="bg-white rounded-2xl p-4 shadow-sm">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                <CreditCard className="w-6 h-6 text-purple-600" />
-              </div>
-              <div className="flex-1">
-                <h4 className="font-semibold text-gray-800">Tarjetas Waylet</h4>
-                <p className="text-gray-600 text-sm">Tarjetas familiares activas</p>
-              </div>
-              <button 
-                className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors group relative"
-                title="Ampliar"
-              >
-                <Plus className="w-4 h-4 text-gray-600" />
-                <div className="absolute -top-8 right-0 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                  Ampliar
-                </div>
-              </button>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-2xl font-bold text-gray-800">
-                {contractedPack.consumption.wayletCards.used}
-              </span>
-              <span className="text-gray-500">
-                de {contractedPack.consumption.wayletCards.total} {contractedPack.consumption.wayletCards.unit}
-              </span>
-            </div>
-          </div> */}
         </div>
 
         {/* Actions */}
@@ -1343,19 +1397,19 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
           {/* Contract Summary */}
           <div className="bg-white rounded-lg p-4 mb-4">
             <h3 className="font-semibold mb-3">Resumen de Contratación</h3>
-            
-            {/* selectedPack.isPersonalized && (
+
+            {selectedPack.isPersonalized && (
               <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
                 <div className="flex items-center gap-2 text-green-700">
                   <span className="text-sm">💡</span>
                   <span className="font-semibold text-sm">Precio Personalizado</span>
                 </div>
                 <p className="text-xs text-green-600 mt-1">
-                  Calculado según la eficiencia energética de tu hogar ({homeConfig.efficiency}), 
+                  Calculado según la eficiencia energética de tu hogar ({homeConfig.efficiency}),
                   tipo de vivienda ({homeConfig.homeType.replace('-', ' ')}) y superficie ({homeConfig.squareMeters}m²)
                 </p>
               </div>
-            ) */}
+            )}
 
             <div className="space-y-3">
               <div className="flex justify-between py-2 border-b">
@@ -1370,11 +1424,11 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
                 <span>Total primer mes</span>
                 <span>€{selectedPack.monthlyPrice}</span>
               </div>
-              {/* selectedPack.isPersonalized && selectedPack.originalPrice !== selectedPack.monthlyPrice && (
+              {selectedPack.isPersonalized && selectedPack.originalPrice !== selectedPack.monthlyPrice && (
                 <div className="text-center text-sm text-green-600 font-medium">
                   💰 Ahorras €{selectedPack.originalPrice - selectedPack.monthlyPrice}/mes
                 </div>
-              ) */}
+              )}
             </div>
           </div>
 
@@ -1413,7 +1467,7 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
       {currentView === 'consumption' && <ConsumptionView />}
       {currentView === 'home-services' && <HomeServicesView />}
       {currentView === 'pack-detail' && <PackDetailView />}
-      {/* {currentView === 'initial-setup' && <InitialSetupView />} */}
+      {currentView === 'initial-setup' && <InitialSetupView />}
 
       {/* Modal de Confirmación */}
       {showConfirmationModal && selectedPack && (
@@ -1555,7 +1609,7 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
               <p className="text-gray-700 text-sm">
                 Se detectó que tienes dispositivos de entretenimiento encendidos por más de 4 horas consecutivas:
               </p>
-              
+
               {/* Lista de dispositivos */}
               <div className="bg-gray-50 rounded-lg p-3 space-y-2">
                 <div className="flex items-center justify-between">
@@ -1662,7 +1716,7 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
                   </div>
                 </div>
               </div>
-              
+
               {/* Información del cupón */}
               <div className="mt-4 pt-4 border-t border-orange-200">
                 <div className="flex justify-between text-xs text-gray-600 mb-1">
@@ -1684,7 +1738,7 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
                 <span className="font-semibold text-sm">Gracias por confiar en Repsol GO+</span>
               </div>
               <p className="text-xs text-green-600">
-                Este descuento es nuestro regalo de bienvenida al Pack Confort Gold. 
+                Este descuento es nuestro regalo de bienvenida al Pack Confort Gold.
                 ¡Disfruta de tu nuevo hogar inteligente!
               </p>
             </div>
