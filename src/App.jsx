@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Bell, User, Lightbulb, ShoppingCart, Truck, ParkingCircle,
   Fuel, Zap, Car, Store, Home, CreditCard, Gift, Users, Briefcase, CheckCircle, Package, Plus
 } from 'lucide-react';
 import HomeBar from './components/HomeBar';
-import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp = () => {
+import logoBackground from './assets/logo-removebg-preview.PNG'; 
+
+const WayletApp = () => {
   const [currentView, setCurrentView] = useState('home');
   const [selectedPack, setSelectedPack] = useState(null);
   const [hasContractedPack, setHasContractedPack] = useState(false); // Empieza sin pack para demostrar flujo
@@ -14,13 +16,60 @@ import logoBackground from './assets/logo-removebg-preview.PNG'; const WayletApp
   const [showCouponsModal, setShowCouponsModal] = useState(false);
   const [temperatureMode, setTemperatureMode] = useState('heating'); // 'heating' or 'cooling'
   const [targetTemperature, setTargetTemperature] = useState(21);
-
+  
   // Estados para modales de ayuda
   const [showEfficiencyHelp, setShowEfficiencyHelp] = useState(false);
   const [showHomeTypeHelp, setShowHomeTypeHelp] = useState(false);
   const [showSquareMetersHelp, setShowSquareMetersHelp] = useState(false);
 
-  // Calcular cupones dinámicamente basado en si tiene pack contratado
+  // Función para actualizar el color del header del navegador móvil
+  const updateThemeColor = (view) => {
+    const colors = {
+      'home': '#f36900', // Naranja Repsol base
+      'packs': '#f36900', // Naranja Repsol 
+      'initial-setup': '#f36900', // Naranja Repsol
+      'home-services': '#f36900', // Naranja Repsol
+      'pack-detail': '#f36900', // Naranja Repsol (se actualiza dinámicamente)
+      'consumption': '#10b981', // Verde de los consumos (from-green-500)
+    };
+    
+    const color = colors[view] || '#f36900';
+    
+    // Actualizar meta tags
+    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+    const msAppMeta = document.querySelector('meta[name="msapplication-navbutton-color"]');
+    
+    if (themeColorMeta) themeColorMeta.setAttribute('content', color);
+    if (msAppMeta) msAppMeta.setAttribute('content', color);
+  };
+
+  // Efecto para cambiar el color cuando cambia la vista
+  useEffect(() => {
+    updateThemeColor(currentView);
+  }, [currentView]);
+
+  // Efecto especial para PackDetailView - usar color del pack seleccionado
+  useEffect(() => {
+    if (currentView === 'pack-detail' && selectedPack) {
+      // Extraer color del gradiente del pack
+      let packColor = '#f36900'; // Default
+      
+      if (selectedPack.color) {
+        if (selectedPack.color.includes('from-orange-400')) {
+          packColor = '#fb923c'; // from-orange-400
+        } else if (selectedPack.color.includes('#f6aa00')) {
+          packColor = '#f6aa00'; // Repsol orange
+        }
+      }
+      
+      // Actualizar con el color específico del pack
+      const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+      const msAppMeta = document.querySelector('meta[name="msapplication-navbutton-color"]');
+      
+      if (themeColorMeta) themeColorMeta.setAttribute('content', packColor);
+      if (msAppMeta) msAppMeta.setAttribute('content', packColor);
+    }
+  }, [currentView, selectedPack]);  // Calcular cupones dinámicamente basado en si tiene pack contratado
   const availableCoupons = hasContractedPack ? 1 : 0;
 
   // Balance del usuario con cupones dinámicos
