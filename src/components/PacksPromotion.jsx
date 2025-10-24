@@ -15,7 +15,7 @@ const PacksPromotion = ({ onExploreClick }) => {
           {/* Círculo animado 2 */}
           <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-yellow-300 bg-opacity-20 rounded-full animate-bounce-slow"></div>
           {/* Elemento flotante */}
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gradient-to-r from-orange-400 to-red-500 rounded-full opacity-20 animate-ping-slow"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gradient-to-b from-orange-400 to-red-500 rounded-full opacity-20 animate-ping-slow"></div>
         </div>
 
         {/* Contenido principal */}

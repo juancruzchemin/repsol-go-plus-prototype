@@ -4,7 +4,7 @@ import {
   Fuel, Zap, Car, Store, Home, CreditCard, Gift, Users, Briefcase, CheckCircle, Package, Plus
 } from 'lucide-react';
 import HomeBar from './components/HomeBar';
-import logoBackground from './assets/logo-removebg-preview.PNG'; 
+import logoBackground from './assets/logo-removebg-preview.PNG';
 
 const WayletApp = () => {
   const [currentView, setCurrentView] = useState('home');
@@ -16,7 +16,7 @@ const WayletApp = () => {
   const [showCouponsModal, setShowCouponsModal] = useState(false);
   const [temperatureMode, setTemperatureMode] = useState('heating'); // 'heating' or 'cooling'
   const [targetTemperature, setTargetTemperature] = useState(21);
-  
+
   // Estados para modales de ayuda
   const [showEfficiencyHelp, setShowEfficiencyHelp] = useState(false);
   const [showHomeTypeHelp, setShowHomeTypeHelp] = useState(false);
@@ -32,13 +32,13 @@ const WayletApp = () => {
       'pack-detail': '#f36900', // Naranja Repsol (se actualiza dinámicamente)
       'consumption': '#10b981', // Verde de los consumos (from-green-500)
     };
-    
+
     const color = colors[view] || '#f36900';
-    
+
     // Actualizar meta tags
     const themeColorMeta = document.querySelector('meta[name="theme-color"]');
     const msAppMeta = document.querySelector('meta[name="msapplication-navbutton-color"]');
-    
+
     if (themeColorMeta) themeColorMeta.setAttribute('content', color);
     if (msAppMeta) msAppMeta.setAttribute('content', color);
   };
@@ -53,7 +53,7 @@ const WayletApp = () => {
     if (currentView === 'pack-detail' && selectedPack) {
       // Extraer color del gradiente del pack
       let packColor = '#f36900'; // Default
-      
+
       if (selectedPack.color) {
         if (selectedPack.color.includes('from-orange-400')) {
           packColor = '#fb923c'; // from-orange-400
@@ -61,11 +61,11 @@ const WayletApp = () => {
           packColor = '#f6aa00'; // Repsol orange
         }
       }
-      
+
       // Actualizar con el color específico del pack
       const themeColorMeta = document.querySelector('meta[name="theme-color"]');
       const msAppMeta = document.querySelector('meta[name="msapplication-navbutton-color"]');
-      
+
       if (themeColorMeta) themeColorMeta.setAttribute('content', packColor);
       if (msAppMeta) msAppMeta.setAttribute('content', packColor);
     }
@@ -81,6 +81,7 @@ const WayletApp = () => {
 
   // Estados para configuración inicial
   const [hasCompletedSetup, setHasCompletedSetup] = useState(false);
+  const [showCalculatedPrice, setShowCalculatedPrice] = useState(false);
   const [homeConfig, setHomeConfig] = useState({
     efficiency: '', // A, B, C, D, E, F
     homeType: '', // departamento, casa, chalet, etc.
@@ -160,7 +161,7 @@ const WayletApp = () => {
       originalPrice: 189,
       savings: 32,
       icon: Zap,
-      color: 'linear-gradient(135deg, #f6aa00 0%, #ff4e00 100%)',
+      color: 'linear-gradient( #f6aa00 0%, #ff4e00 100%)',
       features: [
         'Control de temperatura inteligente 24/7',
         'Climatización automática premium',
@@ -203,7 +204,7 @@ const WayletApp = () => {
       position: 'relative'
     }}>
       {/* Header */}
-      <div className="text-white p-4 relative" style={{ background: 'linear-gradient(135deg, #f6aa00 0%, #ff4e00 100%)' }}>
+      <div className="text-white p-4 relative" style={{ background: 'linear-gradient( #f6aa00 0%, #ff4e00 100%)' }}>
         {/* Botón de volver - posicionado absolutamente */}
         <button
           onClick={() => setCurrentView('home')}
@@ -322,76 +323,71 @@ const WayletApp = () => {
             <input
               type="number"
               placeholder="Ej: 85"
-              value={homeConfig.squareMeters}
-              onChange={(e) => setHomeConfig({ ...homeConfig, squareMeters: e.target.value })}
+              defaultValue={homeConfig.squareMeters}
+              onBlur={(e) => {
+                const newSquareMeters = e.target.value;
+                setHomeConfig({ ...homeConfig, squareMeters: newSquareMeters });
+                
+                // Auto-calcular precio si todos los campos están completos
+                if (homeConfig.efficiency && homeConfig.homeType && newSquareMeters) {
+                  const prices = calculateCustomPrices(homeConfig.efficiency, homeConfig.homeType, newSquareMeters);
+                  setCalculatedPrices(prices);
+                  setShowCalculatedPrice(true);
+                }
+              }}
               className="w-full p-4 border-2 border-gray-200 rounded-lg text-lg text-center font-semibold focus:border-orange-500 focus:outline-none"
               inputMode="numeric"
-              style={{
-                transform: 'translateZ(0)',
-                WebkitTransform: 'translateZ(0)',
-                WebkitAppearance: 'none',
-                MozAppearance: 'textfield',
-                position: 'relative',
-                zIndex: 1
-              }}
-              onFocus={(e) => {
-                // Prevenir el scroll automático del navegador
-                e.preventDefault();
-                e.target.scrollIntoView = () => { }; // Deshabilitar scrollIntoView
-              }}
-              onInput={(e) => {
-                // Mantener la vista fija durante la entrada
-                e.preventDefault();
-                const value = e.target.value;
-                setHomeConfig({ ...homeConfig, squareMeters: value });
-              }}
             />
           </div>
           <div className="text-center mt-2 text-sm text-gray-500">m²</div>
         </div>
 
-        {/* Vista previa de precio si todos los campos están completos */}
-        {homeConfig.efficiency && homeConfig.homeType && homeConfig.squareMeters && (
-          <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-4">
+        {/* Vista previa de precio si se ha calculado */}
+        {showCalculatedPrice && homeConfig.efficiency && homeConfig.homeType && homeConfig.squareMeters && (
+          <div className="bg-gradient-to-b from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-4">
             <h4 className="font-bold text-green-800 mb-2">💡 Precio Personalizado Calculado</h4>
-            {(() => {
-              const prices = calculateCustomPrices(homeConfig.efficiency, homeConfig.homeType, homeConfig.squareMeters);
-              return (
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-green-700">Pack Confort Básico</span>
-                    <span className="text-lg font-bold text-green-800">€{prices.basicPack}/mes</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-green-700">Pack Confort Gold</span>
-                    <span className="text-lg font-bold text-green-800">€{prices.goldPack}/mes</span>
-                  </div>
-                  <div className="text-xs text-green-600 mt-2">
-                    ⭐ Precio personalizado basado en tu hogar
-                  </div>
-                </div>
-              );
-            })()}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-green-700">Pack Confort Básico</span>
+                <span className="text-lg font-bold text-green-800">€{calculatedPrices.basicPack}/mes</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-green-700">Pack Confort Gold</span>
+                <span className="text-lg font-bold text-green-800">€{calculatedPrices.goldPack}/mes</span>
+              </div>
+              <div className="text-xs text-green-600 mt-2">
+                ⭐ Precio personalizado basado en tu hogar
+              </div>
+              <button
+                onClick={() => {
+                  setShowCalculatedPrice(false);
+                }}
+                className="w-full mt-2 text-green-700 text-sm underline hover:text-green-800 transition-colors"
+              >
+                Recalcular precio
+              </button>
+            </div>
           </div>
         )}
 
         {/* Botón continuar */}
         <button
           onClick={() => {
-            if (homeConfig.efficiency && homeConfig.homeType && homeConfig.squareMeters) {
-              const prices = calculateCustomPrices(homeConfig.efficiency, homeConfig.homeType, homeConfig.squareMeters);
-              setCalculatedPrices(prices);
+            if (showCalculatedPrice) {
               setHasCompletedSetup(true);
               setCurrentView('home-services');
             }
           }}
-          disabled={!homeConfig.efficiency || !homeConfig.homeType || !homeConfig.squareMeters}
-          className={`w-full py-4 rounded-xl font-bold text-lg transition-all ${homeConfig.efficiency && homeConfig.homeType && homeConfig.squareMeters
-            ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg hover:shadow-xl'
+          disabled={!showCalculatedPrice}
+          className={`w-full py-4 rounded-xl font-bold text-lg transition-all ${showCalculatedPrice
+            ? 'bg-gradient-to-b from-orange-500 to-red-500 text-white shadow-lg hover:shadow-xl'
             : 'bg-gray-200 text-gray-400 cursor-not-allowed'
             }`}
         >
-          Continuar y Ver Packs Personalizados
+          {showCalculatedPrice 
+            ? 'Continuar y Ver Packs Personalizados' 
+            : 'Primero calcula tu precio personalizado'
+          }
         </button>
 
         <p className="text-center text-xs text-gray-500">
@@ -629,7 +625,7 @@ const WayletApp = () => {
                 <div
                   className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
                   style={{
-                    background: 'linear-gradient(135deg, #f6aa00 0%, #ff4e00 100%)'
+                    background: 'linear-gradient( #f6aa00 0%, #ff4e00 100%)'
                   }}
                 >
                   <Zap className="w-6 h-6 text-white" />
@@ -658,7 +654,7 @@ const WayletApp = () => {
         /* Promoción Hogar Inteligente - Solo si NO tiene pack contratado */
         <div className="packs-animate-gradient" style={{ borderRadius: '16px', justifyContent: 'center', margin: "10px" }}>
           <div className="mx-4 mt-1 mb-6 relative z-50">
-            <div className="bg-white bg-opacity-20 backdrop-blur-lg rounded-2xl p-3 shadow-xl border border-white border-opacity-40 relative z-50" style={{ background: 'linear-gradient(135deg, #f6aa00 0%, #ff4e00 100%)', marginTop: "17px" }}>
+            <div className="bg-white bg-opacity-20 backdrop-blur-lg rounded-2xl p-3 shadow-xl border border-white border-opacity-40 relative z-50" style={{ background: 'linear-gradient(#f6aa00 0%, #ff4e00 100%)', marginTop: "17px" }}>
               <div className="flex items-center gap-4 mb-3 relative z-50">
                 <div className="w-12 h-12 bg-white bg-opacity-40 rounded-full flex items-center justify-center flex-shrink-0 shadow-xl border border-white border-opacity-50">
                   <div className="relative">
@@ -794,7 +790,7 @@ const WayletApp = () => {
   const PacksView = () => (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="text-white p-4" style={{ background: 'linear-gradient(135deg, #f6aa00 0%, #ff4e00 100%)' }}>
+      <div className="text-white p-4" style={{ background: 'linear-gradient( #f6aa00 0%, #ff4e00 100%)' }}>
         <div className="flex items-center gap-3">
           <button onClick={() => setCurrentView('home')} className="text-white">
             ←
@@ -812,7 +808,7 @@ const WayletApp = () => {
           return (
             <div key={pack.id} className="bg-white rounded-lg shadow-sm mb-4 overflow-hidden">
               {/* Pack Header */}
-              <div className={`bg-gradient-to-r ${pack.color} text-white p-4`}>
+              <div className={`bg-gradient-to-b ${pack.color} text-white p-4`}>
                 <div className="flex items-center gap-3 mb-2">
                   <IconComponent className="w-6 h-6" />
                   <div className="flex-1">
@@ -847,7 +843,7 @@ const WayletApp = () => {
                     setSelectedPack(pack);
                     setCurrentView('pack-detail');
                   }}
-                  className={`w-full bg-gradient-to-r ${pack.color} text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity`}
+                  className={`w-full bg-gradient-to-b ${pack.color} text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity`}
                 >
                   Contratar Pack - €{pack.monthlyPrice}/mes
                 </button>
@@ -862,7 +858,7 @@ const WayletApp = () => {
   const HomeServicesView = () => (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="text-white p-4" style={{ background: 'linear-gradient(135deg, #f6aa00 0%, #ff4e00 100%)' }}>
+      <div className="text-white p-4" style={{ background: 'linear-gradient( #f6aa00 0%, #ff4e00 100%)' }}>
         <div className="flex items-center gap-3">
           <button onClick={() => setCurrentView('home')} className="text-white">
             ←
@@ -1145,7 +1141,7 @@ const WayletApp = () => {
                   setCurrentView('pack-detail');
                 }}
                 className="w-full text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
-                style={{ background: 'linear-gradient(135deg, #f6aa00 0%, #ff4e00 100%)' }}
+                style={{ background: 'linear-gradient( #f6aa00 0%, #ff4e00 100%)' }}
               >
                 Contratar Pack - €{calculatedPrices.basicPack}/mes
               </button>
@@ -1214,7 +1210,7 @@ const WayletApp = () => {
                   setCurrentView('pack-detail');
                 }}
                 className="w-full text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
-                style={{ background: 'linear-gradient(135deg, #f6aa00 0%, #ff4e00 100%)' }}
+                style={{ background: 'linear-gradient( #f6aa00 0%, #ff4e00 100%)' }}
               >
                 Contratar Pack - €{calculatedPrices.goldPack}/mes
               </button>
@@ -1259,7 +1255,7 @@ const WayletApp = () => {
   const ConsumptionView = () => (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-br from-green-500 to-emerald-600 text-white p-4">
+      <div className="bg-gradient-to-b from-green-500 to-emerald-600 text-white p-4">
         <div className="flex items-center gap-3">
           <button onClick={() => setCurrentView('home')} className="text-white">
             ←
@@ -1429,7 +1425,7 @@ const WayletApp = () => {
     return (
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
-        <div className={`bg-gradient-to-r ${selectedPack.color} text-white p-4`}>
+        <div className={`bg-gradient-to-b ${selectedPack.color} text-white p-4`}>
           <div className="flex items-center gap-3">
             <button onClick={() => setCurrentView('packs')} className="text-white">
               ←
@@ -1496,7 +1492,7 @@ const WayletApp = () => {
 
           <button
             onClick={() => setShowConfirmationModal(true)}
-            className={`w-full bg-gradient-to-r ${selectedPack.color} text-white py-3 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity`}
+            className={`w-full bg-gradient-to-b ${selectedPack.color} text-white py-3 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity`}
           >
             Contratar Ahora - €{selectedPack.monthlyPrice}/mes
           </button>
@@ -1524,7 +1520,7 @@ const WayletApp = () => {
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl">
             {/* Header del modal */}
             <div className="text-center mb-4">
-              <div className={`w-16 h-16 bg-gradient-to-r ${selectedPack.color} rounded-full flex items-center justify-center mx-auto mb-3`}>
+              <div className={`w-16 h-16 bg-gradient-to-b ${selectedPack.color} rounded-full flex items-center justify-center mx-auto mb-3`}>
                 <CheckCircle className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">
@@ -1575,7 +1571,7 @@ const WayletApp = () => {
                     setCurrentView('home');
                   }, 2500);
                 }}
-                className={`flex-1 bg-gradient-to-r ${selectedPack.color} text-white py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity`}
+                className={`flex-1 bg-gradient-to-b ${selectedPack.color} text-white py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity`}
               >
                 Confirmar
               </button>
@@ -1586,7 +1582,7 @@ const WayletApp = () => {
 
       {/* Animación de Éxito */}
       {showSuccessAnimation && selectedPack && (
-        <div className="fixed inset-0 bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-gradient-to-b from-green-500 to-emerald-600 flex items-center justify-center z-50">
           <div className="text-center text-white animate-pulse">
             {/* Ícono animado */}
             <div className="relative mb-6">
@@ -1726,7 +1722,7 @@ const WayletApp = () => {
                 }}
                 className="flex-1 py-3 px-4 rounded-lg font-medium text-white transition-colors"
                 style={{
-                  background: 'linear-gradient(135deg, #f6aa00 0%, #ff4e00 100%)'
+                  background: 'linear-gradient( #f6aa00 0%, #ff4e00 100%)'
                 }}
               >
                 Ver Configuración
@@ -1752,7 +1748,7 @@ const WayletApp = () => {
             </div>
 
             {/* Cupón de Amazon */}
-            <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border-2 border-dashed border-orange-300 rounded-xl p-4 mb-6">
+            <div className="bg-gradient-to-b from-orange-50 to-yellow-50 border-2 border-dashed border-orange-300 rounded-xl p-4 mb-6">
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center shadow-sm">
                   <div className="text-2xl font-bold text-black">amazon</div>
@@ -1798,7 +1794,7 @@ const WayletApp = () => {
                 onClick={() => setShowCouponsModal(false)}
                 className="flex-1 py-3 px-4 rounded-xl font-semibold text-white transition-colors"
                 style={{
-                  background: 'linear-gradient(135deg, #f6aa00 0%, #ff4e00 100%)'
+                  background: 'linear-gradient( #f6aa00 0%, #ff4e00 100%)'
                 }}
               >
                 ¡Genial! Usar más tarde
