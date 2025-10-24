@@ -570,9 +570,9 @@ const WayletApp = () => {
             {/* Demo button - temporal para testing */}
             <button
               onClick={() => setHasContractedPack(!hasContractedPack)}
-              className="text-xs bg-white bg-opacity-20 px-2 py-1 rounded text-white backdrop-blur-sm mg-2 px-5"
+              className="text-xs bg-white bg-opacity-15 px-3 py-2 rounded-full text-white backdrop-blur-sm font-semibold border border-white border-opacity-40"
             >
-              {hasContractedPack ? 'Pack gold' : 'Contrataciones'}
+              {hasContractedPack ? 'Pack Activo' : 'Contratar Pack'}
             </button>
 
             <div className="flex gap-3">
@@ -635,7 +635,7 @@ const WayletApp = () => {
                     Controla tu confort
                   </h3>
                   <p className="text-gray-600 text-sm">
-                    Pack Confort gold activo • Vence 15 Nov 2025
+                    {hasCompletedSetup ? 'Pack Confort gold activo • Vence 15 Nov 2025' : '🎮 Modo Demo: Simula tu Pack Gold'}
                   </p>
                 </div>
                 <div className="text-right">
@@ -643,7 +643,7 @@ const WayletApp = () => {
                     €{hasCompletedSetup ? calculatedPrices.goldPack : 129}/mes
                   </div>
                   <div className="text-gray-500 text-xs">
-                    {hasCompletedSetup ? 'Precio personalizado' : 'Renovación automática'}
+                    {hasCompletedSetup ? 'Precio personalizado' : 'Demo - Sin formulario'}
                   </div>
                 </div>
               </div>
@@ -1247,6 +1247,28 @@ const WayletApp = () => {
               </div>
             </div>
           </div>
+
+          {/* Botón para recalcular planes */}
+          <div>
+            <div className="text-center">              
+              <button
+                onClick={() => {
+                  // Resetear el formulario para permitir recalcular
+                  setShowCalculatedPrice(false);
+                  setHasCompletedSetup(false);
+                  setHomeConfig({
+                    efficiency: '',
+                    homeType: '',
+                    squareMeters: ''
+                  });
+                  setCurrentView('initial-setup');
+                }}
+                className="w-full bg-orange-200 text-black py-2 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
+              >
+                📋 Recalcular Mis Planes Personalizados
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
@@ -1582,52 +1604,68 @@ const WayletApp = () => {
 
       {/* Animación de Éxito */}
       {showSuccessAnimation && selectedPack && (
-        <div className="fixed inset-0 bg-gradient-to-b from-green-500 to-emerald-600 flex items-center justify-center z-50">
-          <div className="text-center text-white animate-pulse">
-            {/* Ícono animado */}
-            <div className="relative mb-6">
-              <div className="w-24 h-24 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto animate-bounce">
-                <CheckCircle className="w-12 h-12 text-white" />
+        <div className="fixed inset-0 bg-gradient-to-b from-green-500 to-emerald-600 z-50">
+          {/* Header móvil verde */}
+          <div className="absolute top-0 left-0 right-0 h-16 bg-green-600" style={{ 
+            background: 'linear-gradient(to bottom, #059669, #047857)',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          }}>
+            <div className="flex items-center justify-center h-full">
+              <div className="flex items-center gap-2 text-white">
+                <CheckCircle className="w-5 h-5" />
+                <span className="font-semibold text-sm">Repsol GO+</span>
               </div>
-              {/* Círculos de expansión */}
-              <div className="absolute inset-0 w-24 h-24 bg-white bg-opacity-10 rounded-full mx-auto animate-ping"></div>
-              <div className="absolute inset-0 w-24 h-24 bg-white bg-opacity-5 rounded-full mx-auto animate-ping" style={{ animationDelay: '0.5s' }}></div>
             </div>
+          </div>
 
-            {/* Texto principal */}
-            <h2 className="text-3xl font-bold mb-2 animate-fade-in">
-              ¡Pack Contratado!
-            </h2>
-            <p className="text-lg opacity-90 mb-2">
-              {selectedPack.name}
-            </p>
-            <p className="text-sm opacity-75">
-              Activado exitosamente por €{selectedPack.monthlyPrice}/mes
-            </p>
-
-            {/* Indicador de progreso */}
-            <div className="mt-8 w-48 mx-auto">
-              <div className="bg-white bg-opacity-20 rounded-full h-1">
-                <div className="bg-white h-1 rounded-full" style={{
-                  width: '100%',
-                  animation: 'progressBar 2.5s ease-out',
-                  transformOrigin: 'left'
-                }}></div>
+          {/* Contenido centrado */}
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center text-white animate-pulse">
+              {/* Ícono animado */}
+              <div className="relative mb-6">
+                <div className="w-24 h-24 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto animate-bounce">
+                  <CheckCircle className="w-12 h-12 text-white" />
+                </div>
+                {/* Círculos de expansión */}
+                <div className="absolute inset-0 w-24 h-24 bg-white bg-opacity-10 rounded-full mx-auto animate-ping"></div>
+                <div className="absolute inset-0 w-24 h-24 bg-white bg-opacity-5 rounded-full mx-auto animate-ping" style={{ animationDelay: '0.5s' }}></div>
               </div>
-              <p className="text-xs mt-2 opacity-75">
-                Redirigiendo...
+
+              {/* Texto principal */}
+              <h2 className="text-3xl font-bold mb-2 animate-fade-in">
+                ¡Pack Contratado!
+              </h2>
+              <p className="text-lg opacity-90 mb-2">
+                {selectedPack.name}
               </p>
+              <p className="text-sm opacity-75">
+                Activado exitosamente por €{selectedPack.monthlyPrice}/mes
+              </p>
+
+              {/* Indicador de progreso */}
+              <div className="mt-8 w-48 mx-auto">
+                <div className="bg-white bg-opacity-20 rounded-full h-1">
+                  <div className="bg-white h-1 rounded-full" style={{
+                    width: '100%',
+                    animation: 'progressBar 2.5s ease-out',
+                    transformOrigin: 'left'
+                  }}></div>
+                </div>
+                <p className="text-xs mt-2 opacity-75">
+                  Redirigiendo...
+                </p>
+              </div>
             </div>
           </div>
 
           {/* Confeti animado */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-10 left-10 w-2 h-2 bg-yellow-300 rounded-full animate-bounce" style={{ animationDelay: '1s' }}></div>
-            <div className="absolute top-20 right-16 w-3 h-3 bg-pink-300 rounded-full animate-bounce" style={{ animationDelay: '1.5s' }}></div>
-            <div className="absolute top-32 left-1/3 w-2 h-2 bg-blue-300 rounded-full animate-bounce" style={{ animationDelay: '0.5s' }}></div>
-            <div className="absolute top-16 right-1/3 w-2 h-2 bg-purple-300 rounded-full animate-bounce" style={{ animationDelay: '2s' }}></div>
-            <div className="absolute top-40 right-10 w-3 h-3 bg-green-300 rounded-full animate-bounce" style={{ animationDelay: '1.2s' }}></div>
-            <div className="absolute top-24 left-1/4 w-2 h-2 bg-orange-300 rounded-full animate-bounce" style={{ animationDelay: '0.8s' }}></div>
+            <div className="absolute top-20 left-10 w-2 h-2 bg-yellow-300 rounded-full animate-bounce" style={{ animationDelay: '1s' }}></div>
+            <div className="absolute top-32 right-16 w-3 h-3 bg-pink-300 rounded-full animate-bounce" style={{ animationDelay: '1.5s' }}></div>
+            <div className="absolute top-44 left-1/3 w-2 h-2 bg-blue-300 rounded-full animate-bounce" style={{ animationDelay: '0.5s' }}></div>
+            <div className="absolute top-28 right-1/3 w-2 h-2 bg-purple-300 rounded-full animate-bounce" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute top-52 right-10 w-3 h-3 bg-white rounded-full animate-bounce" style={{ animationDelay: '1.2s' }}></div>
+            <div className="absolute top-36 left-1/4 w-2 h-2 bg-orange-300 rounded-full animate-bounce" style={{ animationDelay: '0.8s' }}></div>
           </div>
         </div>
       )}
