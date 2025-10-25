@@ -163,7 +163,7 @@ const WayletApp = () => {
       icon: Zap,
       color: 'linear-gradient( #f6aa00 0%, #ff4e00 100%)',
       features: [
-        'Control de temperatura inteligente 24/7',
+        'Control de temperatura inteligente con Google Nest',
         'Climatización automática premium',
         'Domótica completa (15 dispositivos)',
         'Optimización energética con IA',
@@ -184,7 +184,7 @@ const WayletApp = () => {
       icon: Home,
       color: 'linear-gradient(135deg, #f6aa00 0%, #FFA726 100%)',
       features: [
-        'Control de temperatura inteligente 24/7',
+        'Control de temperatura inteligente con Google Nest',
         'Aire acondicionado automático en verano',
         'Calefacción inteligente en invierno',
         'Domótica básica (luces y persianas)',
@@ -1107,7 +1107,7 @@ const WayletApp = () => {
               <div className="space-y-3 mb-4">
                 <div className="flex items-center gap-3">
                   <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                  <span className="text-sm">Control de temperatura inteligente</span>
+                  <span className="text-sm">Control de temperatura inteligente con Google Nest</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
@@ -1131,7 +1131,7 @@ const WayletApp = () => {
                     icon: Home,
                     color: 'from-orange-400 to-red-500',
                     features: [
-                      'Control de temperatura inteligente',
+                      'Control de temperatura inteligente con Google Nest',
                       'Hub de control energético',
                       'Sugerencias básicas de eficiencias energeticas'
                     ],
@@ -1150,7 +1150,7 @@ const WayletApp = () => {
 
           {/* Pack para el hogar 2*/}
           <div className="bg-white rounded-2xl shadow-sm mb-4 overflow-hidden">
-            <div className="text-white p-4" style={{ background: 'linear-gradient(135deg, #f7be42ff 0%, #f7be42ff 100%)' }}>
+            <div className="w-full bg-gradient-to-b from-orange-400 to-red-500 text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity" >
               <div className="flex items-center gap-3 mb-2">
                 <Home className="w-6 h-6" />
                 <div className="flex-1">
@@ -1171,7 +1171,7 @@ const WayletApp = () => {
               <div className="space-y-3 mb-4">
                 <div className="flex items-center gap-3">
                   <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                  <span className="text-sm">Control de temperatura inteligente</span>
+                  <span className="text-sm">Control de temperatura inteligente con Google Nest</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
@@ -1179,7 +1179,7 @@ const WayletApp = () => {
                 </div>
                 <div className="flex items-center gap-3">
                   <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                  <span className="text-sm">Domótica básica incluida</span>
+                  <span className="text-sm">Domótica básica incluida con Google Home con Google Home</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
@@ -1199,9 +1199,9 @@ const WayletApp = () => {
                     icon: Home,
                     color: 'from-orange-400 to-red-500',
                     features: [
-                      'Control de temperatura inteligente',
+                      'Control de temperatura inteligente con Google Nest',
                       'Hub de control energetico',
-                      'Domótica básica incluida',
+                      'Domótica básica incluida con Google Home',
                       'Optimización energética automática',
                     ],
                     bestFor: 'Perfecto para mantener tu hogar a la temperatura ideal todo el año',
@@ -1209,8 +1209,7 @@ const WayletApp = () => {
                   });
                   setCurrentView('pack-detail');
                 }}
-                className="w-full text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
-                style={{ background: 'linear-gradient( #f6aa00 0%, #ff4e00 100%)' }}
+                className="w-full bg-gradient-to-b from-orange-400 to-red-500 text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
               >
                 Contratar Pack - €{calculatedPrices.goldPack}/mes
               </button>
@@ -1449,7 +1448,7 @@ const WayletApp = () => {
         {/* Header */}
         <div className={`bg-gradient-to-b ${selectedPack.color} text-white p-4`}>
           <div className="flex items-center gap-3">
-            <button onClick={() => setCurrentView('packs')} className="text-white">
+            <button onClick={() => setCurrentView('home-services')} className="text-white">
               ←
             </button>
             <IconComponent className="w-6 h-6" />
@@ -1586,11 +1585,17 @@ const WayletApp = () => {
                 onClick={() => {
                   setShowConfirmationModal(false);
                   setShowSuccessAnimation(true);
+                  
+                  // Cambiar color del header del navegador móvil a verde
+                  updateThemeColor('#10b981'); // Verde de éxito
+                  
                   // Después de 2.5 segundos, contratar pack y volver al home
                   setTimeout(() => {
                     setHasContractedPack(true);
                     setShowSuccessAnimation(false);
                     setCurrentView('home');
+                    // Restaurar color del header basado en la vista home
+                    updateThemeColor('#f6aa00'); // Color naranja del home
                   }, 2500);
                 }}
                 className={`flex-1 bg-gradient-to-b ${selectedPack.color} text-white py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity`}
@@ -1604,57 +1609,41 @@ const WayletApp = () => {
 
       {/* Animación de Éxito */}
       {showSuccessAnimation && selectedPack && (
-        <div className="fixed inset-0 bg-gradient-to-b from-green-500 to-emerald-600 z-50">
-          {/* Header móvil verde */}
-          <div className="absolute top-0 left-0 right-0 h-16 bg-green-600" style={{ 
-            background: 'linear-gradient(to bottom, #059669, #047857)',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-          }}>
-            <div className="flex items-center justify-center h-full">
-              <div className="flex items-center gap-2 text-white">
-                <CheckCircle className="w-5 h-5" />
-                <span className="font-semibold text-sm">Repsol GO+</span>
+        <div className="fixed inset-0 bg-gradient-to-b from-green-500 to-emerald-600 flex items-center justify-center z-50">
+          <div className="text-center text-white animate-pulse">
+            {/* Ícono animado */}
+            <div className="relative mb-6">
+              <div className="w-24 h-24 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto animate-bounce">
+                <CheckCircle className="w-12 h-12 text-white" />
               </div>
+              {/* Círculos de expansión */}
+              <div className="absolute inset-0 w-24 h-24 bg-white bg-opacity-10 rounded-full mx-auto animate-ping"></div>
+              <div className="absolute inset-0 w-24 h-24 bg-white bg-opacity-5 rounded-full mx-auto animate-ping" style={{ animationDelay: '0.5s' }}></div>
             </div>
-          </div>
 
-          {/* Contenido centrado */}
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center text-white animate-pulse">
-              {/* Ícono animado */}
-              <div className="relative mb-6">
-                <div className="w-24 h-24 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto animate-bounce">
-                  <CheckCircle className="w-12 h-12 text-white" />
-                </div>
-                {/* Círculos de expansión */}
-                <div className="absolute inset-0 w-24 h-24 bg-white bg-opacity-10 rounded-full mx-auto animate-ping"></div>
-                <div className="absolute inset-0 w-24 h-24 bg-white bg-opacity-5 rounded-full mx-auto animate-ping" style={{ animationDelay: '0.5s' }}></div>
+            {/* Texto principal */}
+            <h2 className="text-3xl font-bold mb-2 animate-fade-in">
+              ¡Pack Contratado!
+            </h2>
+            <p className="text-lg opacity-90 mb-2">
+              {selectedPack.name}
+            </p>
+            <p className="text-sm opacity-75">
+              Activado exitosamente por €{selectedPack.monthlyPrice}/mes
+            </p>
+
+            {/* Indicador de progreso */}
+            <div className="mt-8 w-48 mx-auto">
+              <div className="bg-white bg-opacity-20 rounded-full h-1">
+                <div className="bg-white h-1 rounded-full" style={{
+                  width: '100%',
+                  animation: 'progressBar 2.5s ease-out',
+                  transformOrigin: 'left'
+                }}></div>
               </div>
-
-              {/* Texto principal */}
-              <h2 className="text-3xl font-bold mb-2 animate-fade-in">
-                ¡Pack Contratado!
-              </h2>
-              <p className="text-lg opacity-90 mb-2">
-                {selectedPack.name}
+              <p className="text-xs mt-2 opacity-75">
+                Redirigiendo...
               </p>
-              <p className="text-sm opacity-75">
-                Activado exitosamente por €{selectedPack.monthlyPrice}/mes
-              </p>
-
-              {/* Indicador de progreso */}
-              <div className="mt-8 w-48 mx-auto">
-                <div className="bg-white bg-opacity-20 rounded-full h-1">
-                  <div className="bg-white h-1 rounded-full" style={{
-                    width: '100%',
-                    animation: 'progressBar 2.5s ease-out',
-                    transformOrigin: 'left'
-                  }}></div>
-                </div>
-                <p className="text-xs mt-2 opacity-75">
-                  Redirigiendo...
-                </p>
-              </div>
             </div>
           </div>
 
